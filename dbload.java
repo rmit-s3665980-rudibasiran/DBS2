@@ -29,6 +29,8 @@ public class dbload {
 		long startTime = System.nanoTime();
 
 		// java dbload -p pagesize datafile
+		// eg
+		// java dbload -p 4096 sample.csv
 
 		// Note that input error detection is not implemented as the aim of the codes is
 		// to simulate paging and it assumes that the user will input erroneous
@@ -88,7 +90,7 @@ public class dbload {
 				// insert key + record in BTree
 
 				if (numPage <= GlobalClass.maxBTreePages) {
-					_bt.insert(record.getDAName(), numPage);
+					_bt.insert(record.getDeviceID(), numPage);
 				}
 
 				// check whether page is full
@@ -111,7 +113,8 @@ public class dbload {
 					p.fillRecord(record);
 
 				numRec++;
-				System.out.println("[Reading CSV line: " + numRec + "][Page:" + numPage + "]");
+				// System.out.println("[Reading CSV line: " + numRec + "][Page:" + numPage +
+				// "]");
 
 			}
 			// scanner suppresses exceptions

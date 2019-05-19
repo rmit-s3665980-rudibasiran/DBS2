@@ -16,13 +16,9 @@ public class GlobalClass {
 	public static int logWrite = 0;
 	public static int logSearch = 1;
 	public static boolean usePageClass = false;
-
 	public static boolean debugMode = true;
-
 	public static String SerializableFileName = "bt.dat";
-
 	public static Boolean doSerializable = true;
-
 	public static int maxBTreePages = 100;
 
 }

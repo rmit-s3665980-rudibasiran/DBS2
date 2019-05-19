@@ -68,10 +68,8 @@ class BTreeInnerNode<TKey extends Comparable<TKey>> extends BTreeNode<TKey> impl
 		this.keyCount += 1;
 	}
 
-	/**
-	 * When splits a internal node, the middle key is kicked out and be pushed to
-	 * parent node.
-	 */
+	// if internal node is split, middle key pushed to parent
+
 	@Override
 	protected BTreeNode<TKey> split() {
 		int midIndex = this.getKeyCount() / 2;
@@ -109,7 +107,7 @@ class BTreeInnerNode<TKey extends Comparable<TKey>> extends BTreeNode<TKey> impl
 		}
 	}
 
-	/* The codes below are used to support delete operation */
+	// delete operations
 
 	private void deleteAt(int index) {
 		int i = 0;
@@ -129,11 +127,11 @@ class BTreeInnerNode<TKey extends Comparable<TKey>> extends BTreeNode<TKey> impl
 			++borrowerChildIndex;
 
 		if (borrowIndex == 0) {
-			// borrow a key from right sibling
+			// get key from right sibling
 			TKey upKey = borrower.transferFromSibling(this.getKey(borrowerChildIndex), lender, borrowIndex);
 			this.setKey(borrowerChildIndex, upKey);
 		} else {
-			// borrow a key from left sibling
+			// get key from left sibling
 			TKey upKey = borrower.transferFromSibling(this.getKey(borrowerChildIndex - 1), lender, borrowIndex);
 			this.setKey(borrowerChildIndex - 1, upKey);
 		}

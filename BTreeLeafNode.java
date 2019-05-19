@@ -69,10 +69,8 @@ class BTreeLeafNode<TKey extends Comparable<TKey>, TValue> extends BTreeNode<TKe
 		++this.keyCount;
 	}
 
-	/**
-	 * When splits a leaf node, the middle key is kept on new node and be pushed to
-	 * parent node.
-	 */
+	// if leaf node split, middle key kept on new node and push to parent node
+
 	@Override
 	protected BTreeNode<TKey> split() {
 		int midIndex = this.getKeyCount() / 2;
@@ -95,7 +93,7 @@ class BTreeLeafNode<TKey extends Comparable<TKey>, TValue> extends BTreeNode<TKe
 		throw new UnsupportedOperationException();
 	}
 
-	/* The codes below are used to support deletion operation */
+	// delete operation
 
 	public boolean delete(TKey key) {
 		int index = this.search(key);
@@ -127,9 +125,7 @@ class BTreeLeafNode<TKey extends Comparable<TKey>, TValue> extends BTreeNode<TKe
 		throw new UnsupportedOperationException();
 	}
 
-	/**
-	 * Notice that the key sunk from parent is be abandoned.
-	 */
+	// merge with sibling
 	@Override
 	@SuppressWarnings("unchecked")
 	protected void fusionWithSibling(TKey sinkKey, BTreeNode<TKey> rightSibling) {

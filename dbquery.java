@@ -12,6 +12,7 @@ Date Created: 31 March 2019
 Description: dbquery Class
 Notes: --
 Change History:
+19 May 2019 - added bTree
  */
 public class dbquery {
 
@@ -21,9 +22,13 @@ public class dbquery {
 		// TODO Auto-generated constructor stub
 	}
 
+	@SuppressWarnings("unchecked")
 	public static void main(String[] args) throws Exception {
-		// java dbquery text pagesize
-		// java dbquery text -b
+		// java dbquery text pagesize -h : query heapfile
+		// java dbquery text pagesize -b : query btree
+		// eg,
+		// java dbquery 17854 4096 -h
+		// java dbquery 17854 4096 -b
 
 		// Note that input error detection is not implemented as the aim of the codes is
 		// to simulate paging and it assumes that the user will input erroneous
@@ -34,21 +39,27 @@ public class dbquery {
 		String textSearch = ""; // text to search for
 		String t_pagesize = ""; // temp page size to capture integer input
 		String datafile = ""; // file to read
+		String t_btree = ""; // look for -b
 
 		textSearch = args[0]; // "text"
-		t_pagesize = args[1]; // "pagesize" or "-b"
+		t_pagesize = args[1]; // "pagesize"
+		t_btree = args[2]; // -h or -b
 
 		int pagesize = GlobalClass.pagesize; // page size
 		String heapfile = "";
 
 		Boolean searchBTree = false;
-		if (t_pagesize == "-b") {
+		if (t_btree.equals("-b")) {
+			System.out.println("Doing BTree command: " + t_btree);
 			searchBTree = true;
+		} else
 
-		} else {
-			pagesize = Integer.parseInt(t_pagesize);
-			heapfile = "heap." + t_pagesize;
+		{
+			System.out.println("Doing heapfile command: " + t_btree);
 		}
+
+		pagesize = Integer.parseInt(t_pagesize);
+		heapfile = "heap." + t_pagesize;
 
 		int x = 0;
 		int ttlNumRec = 0;
@@ -57,12 +68,16 @@ public class dbquery {
 		int checkSizeofPage = pagesize - GlobalClass.pagegap;
 		byte[] tmpByteArray = new byte[pagesize];
 
-		if (GlobalClass.doSerializable) {
-			if (searchBTree) {
+		if (searchBTree) {
+			if (GlobalClass.doSerializable) {
+				System.out.println("Loading BTree");
 				loadSerializable();
-				_bt.search(textSearch);
+				Boolean found = false;
+				String s = "";
+				s = "Found [" + textSearch + "] in BTree at page: " + _bt.search(textSearch);
+				Helper.loggerMatch(s);
+				System.out.println(s);
 			}
-
 		} else {
 
 			// Reading data from the same file
@@ -104,9 +119,9 @@ public class dbquery {
 				// search for queried text
 				if (da_name.contains(textSearch)) {
 					numFound++;
-					String s = "Found in record [" + x + "]: " + device_id + "-->" + arrival_time + "-->"
-							+ duration_seconds + "-->" + street_name + "--> " + side_of_street + "-->" + in_violation
-							+ "\n";
+					String s = "Found in record [" + x + "] in Page[" + numPage + "]: " + device_id + "-->"
+							+ arrival_time + "-->" + duration_seconds + "-->" + street_name + "--> " + side_of_street
+							+ "-->" + in_violation + "\n";
 					Helper.loggerMatch(s);
 					System.out.println(s);
 

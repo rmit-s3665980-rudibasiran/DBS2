@@ -50,11 +50,10 @@ abstract class BTreeNode<TKey extends Comparable<TKey>> implements Serializable 
 
 	public abstract TreeNodeType getNodeType();
 
-	/**
-	 * Search a key on current node, if found the key then return its position,
-	 * otherwise return -1 for a leaf node, return the child node index which should
-	 * contain the key for a internal node.
-	 */
+	// search key on current node
+	// if found, return position else return -1
+	// return child node index which should contain key for internal node
+
 	public abstract int search(TKey key);
 
 	/* The codes below are used to support insertion operation */
@@ -89,7 +88,7 @@ abstract class BTreeNode<TKey extends Comparable<TKey>> implements Serializable 
 
 	protected abstract BTreeNode<TKey> pushUpKey(TKey key, BTreeNode<TKey> leftChild, BTreeNode<TKey> rightNode);
 
-	/* The codes below are used to support deletion operation */
+	// delete operation
 
 	public boolean isUnderflow() {
 		return this.getKeyCount() < (this.keys.length / 2);
@@ -136,7 +135,7 @@ abstract class BTreeNode<TKey extends Comparable<TKey>> implements Serializable 
 			return null;
 		}
 
-		// Can not borrow a key from any sibling, then do fusion with sibling
+		// if cannot borrow key from any sibling, then do fusion with sibling
 		if (leftSibling != null) {
 			return this.getParent().processChildrenFusion(leftSibling, this);
 		} else {

@@ -6,20 +6,10 @@ Developer(s):
 - Rudi Basiran <s3665980@student.rmit.edu.au> 
 Date Created: 19 May 2019 
 Description: BTree Class
-Notes: --
+Notes: B+ Tree has internal and external nodes
 Change History:
  */
 
-/**
- * A B+ tree Since the structures and behaviors between internal node and
- * external node are different, so there are two different classes for each kind
- * of node.
- * 
- * @param <TKey>
- *            the data type of the key
- * @param <TValue>
- *            the data type of the value
- */
 public class BTree<TKey extends Comparable<TKey>, TValue> implements Serializable {
 	private BTreeNode<TKey> root;
 
@@ -27,10 +17,10 @@ public class BTree<TKey extends Comparable<TKey>, TValue> implements Serializabl
 		this.root = new BTreeLeafNode<TKey, TValue>();
 	}
 
-	/**
-	 * Insert a new key and its associated value into the B+ tree.
-	 */
+	// insert key & value
 	public void insert(TKey key, TValue value) {
+
+		System.out.println("Adding key/value: " + key + "/" + value);
 		BTreeLeafNode<TKey, TValue> leaf = this.findLeafNodeShouldContainKey(key);
 		leaf.insertKey(key, value);
 
@@ -41,19 +31,17 @@ public class BTree<TKey extends Comparable<TKey>, TValue> implements Serializabl
 		}
 	}
 
-	/**
-	 * Search a key value on the tree and return its associated value.
-	 */
+	// search whether key exists
 	public TValue search(TKey key) {
+
+		System.out.println("Searching key: " + key);
 		BTreeLeafNode<TKey, TValue> leaf = this.findLeafNodeShouldContainKey(key);
 
 		int index = leaf.search(key);
 		return (index == -1) ? null : leaf.getValue(index);
 	}
 
-	/**
-	 * Delete a key and its associated value from the tree.
-	 */
+	// delete key & valueif exists
 	public void delete(TKey key) {
 		BTreeLeafNode<TKey, TValue> leaf = this.findLeafNodeShouldContainKey(key);
 
@@ -64,9 +52,8 @@ public class BTree<TKey extends Comparable<TKey>, TValue> implements Serializabl
 		}
 	}
 
-	/**
-	 * Search the leaf node which should contain the specified key
-	 */
+	// search leaf node to see whether key exists
+
 	@SuppressWarnings("unchecked")
 	private BTreeLeafNode<TKey, TValue> findLeafNodeShouldContainKey(TKey key) {
 		BTreeNode<TKey> node = this.root;
