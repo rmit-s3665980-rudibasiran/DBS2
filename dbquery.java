@@ -1,7 +1,11 @@
 import java.io.DataInputStream;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.ObjectInputStream;
 
 /*
-Title: RMIT Database Systems Assignment 1
+Title: RMIT Database Systems Assignment 1 / 2
 Developer(s): 
 - Rudi Basiran <s3665980@student.rmit.edu.au> 
 Date Created: 31 March 2019 
@@ -10,6 +14,8 @@ Notes: --
 Change History:
  */
 public class dbquery {
+
+	private static BTree _bt = new BTree();
 
 	public dbquery() {
 		// TODO Auto-generated constructor stub
@@ -38,6 +44,10 @@ public class dbquery {
 		// Reading data from the same file
 		DataInputStream dis = null;
 		dis = Helper.openInputStream(heapfile);
+
+		if (GlobalClass.doSerializable) {
+			loadSerializable();
+		}
 
 		int x = 0;
 		int ttlNumRec = 0;
@@ -99,6 +109,27 @@ public class dbquery {
 
 		Helper.drawLine();
 
+	}
+
+	public static Boolean loadSerializable() {
+		Boolean hasData = false;
+
+		try {
+			ObjectInputStream input = new ObjectInputStream(new FileInputStream(GlobalClass.SerializableFileName));
+			_bt = (BTree) input.readObject();
+			input.close();
+		} catch (FileNotFoundException e) {
+			System.out.println(
+					"FileNotFoundException | Serializable File " + GlobalClass.SerializableFileName + " not found.");
+		} catch (ClassNotFoundException e) {
+			System.out.println("ClassNotFoundException");
+			// e.printStackTrace();
+		} catch (IOException e) {
+			System.out.println("IOException");
+			// e.printStackTrace();
+		}
+
+		return hasData;
 	}
 
 }

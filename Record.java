@@ -1,11 +1,12 @@
 /*
-Title: RMIT Database Systems Assignment 1
+Title: RMIT Database Systems Assignment 1 / 2
 Developer(s): 
 - Rudi Basiran <s3665980@student.rmit.edu.au> 
 Date Created: 30 March 2019 
 Description: Record Class
 Notes: --
 Change History:
+19 May 2019 - arrival_time & departure_time remains as string as there will not be any searches on it; searches are on da_name
  */
 
 class Record {

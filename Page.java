@@ -1,7 +1,7 @@
 import java.util.Arrays;
 
 /*
-Title: RMIT Database Systems Assignment 1
+Title: RMIT Database Systems Assignment 1 / 2
 Developer(s): 
 - Rudi Basiran <s3665980@student.rmit.edu.au> 
 Date Created: 31 March 2019 

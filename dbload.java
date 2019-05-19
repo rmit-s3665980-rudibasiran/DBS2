@@ -1,9 +1,13 @@
 import java.io.DataOutputStream;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.ObjectOutputStream;
 import java.util.Scanner;
 
 /*
-Title: RMIT Database Systems Assignment 1
+Title: RMIT Database Systems Assignment 1 / 2
 Developer(s): 
 - Rudi Basiran <s3665980@student.rmit.edu.au> 
 Date Created: 30 March 2019 
@@ -14,8 +18,9 @@ Change History:
 
 public class dbload {
 
-	public dbload() {
+	private static BTree _bt = new BTree();
 
+	public dbload() {
 	}
 
 	public static void main(String[] args) throws Exception {
@@ -79,6 +84,9 @@ public class dbload {
 				String[] attributes = line.split(GlobalClass.delimiter); // get all columns delimited into string array
 				record = Helper.createRecord(attributes); // build columns into record class
 
+				// insert key + record in BTree
+				_bt.insert(record.getDAName(), numPage);
+
 				// check whether page is full
 				if (checkSizeofPage - record.getSizeOfRecord() > 0) {
 					// decrement balance space if not full
@@ -116,6 +124,10 @@ public class dbload {
 			}
 		}
 
+		if (GlobalClass.doSerializable) {
+			fillSerializable();
+		}
+
 		pos.close();
 		dos.close();
 
@@ -125,6 +137,21 @@ public class dbload {
 		Helper.logger(numRec, numPage, totalTime, GlobalClass.logWrite);
 
 		Helper.drawLine();
+
+	}
+
+	public static void fillSerializable() {
+
+		try {
+			ObjectOutputStream output = new ObjectOutputStream(new FileOutputStream(GlobalClass.SerializableFileName));
+			output.writeObject(_bt);
+			output.close();
+		} catch (FileNotFoundException e) {
+			System.out.println(
+					"FileNotFoundException | Serializable File " + GlobalClass.SerializableFileName + " not found.");
+		} catch (IOException e) {
+			System.out.println("IOException");
+		}
 
 	}
 

@@ -8,7 +8,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 
 /*
-Title: RMIT Database Systems Assignment 1
+Title: RMIT Database Systems Assignment 1 / 2
 Developer(s): 
 - Rudi Basiran <s3665980@student.rmit.edu.au> 
 Date Created: 30 March 2019 
