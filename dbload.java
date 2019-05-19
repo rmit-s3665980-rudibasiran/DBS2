@@ -23,6 +23,7 @@ public class dbload {
 	public dbload() {
 	}
 
+	@SuppressWarnings("unchecked")
 	public static void main(String[] args) throws Exception {
 
 		long startTime = System.nanoTime();
@@ -85,7 +86,10 @@ public class dbload {
 				record = Helper.createRecord(attributes); // build columns into record class
 
 				// insert key + record in BTree
-				_bt.insert(record.getDAName(), numPage);
+
+				if (numPage <= GlobalClass.maxBTreePages) {
+					_bt.insert(record.getDAName(), numPage);
+				}
 
 				// check whether page is full
 				if (checkSizeofPage - record.getSizeOfRecord() > 0) {
@@ -124,12 +128,12 @@ public class dbload {
 			}
 		}
 
+		pos.close();
+		dos.close();
+
 		if (GlobalClass.doSerializable) {
 			fillSerializable();
 		}
-
-		pos.close();
-		dos.close();
 
 		long endTime = System.nanoTime();
 		long totalTime = endTime - startTime;

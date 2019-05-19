@@ -21,6 +21,8 @@ public class GlobalClass {
 
 	public static String SerializableFileName = "bt.dat";
 
-	public static Boolean doSerializable = false;
+	public static Boolean doSerializable = true;
+
+	public static int maxBTreePages = 100;
 
 }
