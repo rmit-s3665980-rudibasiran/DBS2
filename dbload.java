@@ -18,7 +18,7 @@ Change History:
 
 public class dbload {
 
-	private static BTree _bt = new BTree();
+	private static BPlusTree _bt = new BPlusTree();
 
 	public dbload() {
 	}
@@ -90,7 +90,8 @@ public class dbload {
 				// insert key + record in BTree
 
 				if (numPage <= GlobalClass.maxBTreePages) {
-					_bt.insert(record.getDeviceID(), numPage);
+					// _bt.insert(record.getDAName(), Integer.toString(numPage));
+					_bt.insert(record.getDeviceID(), Integer.toString(numPage));
 				}
 
 				// check whether page is full

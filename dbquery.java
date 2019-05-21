@@ -16,7 +16,7 @@ Change History:
  */
 public class dbquery {
 
-	private static BTree _bt = new BTree();
+	private static BPlusTree _bt = new BPlusTree();
 
 	public dbquery() {
 		// TODO Auto-generated constructor stub
@@ -74,7 +74,7 @@ public class dbquery {
 				loadSerializable();
 				Boolean found = false;
 				String s = "";
-				s = "Found [" + textSearch + "] in BTree at page: " + _bt.search(textSearch);
+				s = "\nFound text [" + textSearch + "] in BTree at Page: " + _bt.search(textSearch) + "\n";
 				Helper.loggerMatch(s);
 				System.out.println(s);
 			}
@@ -135,6 +135,7 @@ public class dbquery {
 
 		Helper.logger(ttlNumRec, numPage, totalTime, GlobalClass.logSearch);
 		Helper.drawLine();
+
 	}
 
 	public static Boolean loadSerializable() {
@@ -142,7 +143,7 @@ public class dbquery {
 
 		try {
 			ObjectInputStream input = new ObjectInputStream(new FileInputStream(GlobalClass.SerializableFileName));
-			_bt = (BTree) input.readObject();
+			_bt = (BPlusTree) input.readObject();
 			input.close();
 		} catch (FileNotFoundException e) {
 			System.out.println(
