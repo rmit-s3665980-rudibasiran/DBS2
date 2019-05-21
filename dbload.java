@@ -91,7 +91,7 @@ public class dbload {
 
 				if (numPage <= GlobalClass.maxBTreePages) {
 					// _bt.insert(record.getDAName(), Integer.toString(numPage));
-					_bt.insert(record.getDeviceID(), Integer.toString(numPage));
+					_bt.insert(record.getDAName(), Integer.toString(numPage));
 				}
 
 				// check whether page is full

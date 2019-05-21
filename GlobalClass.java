@@ -19,6 +19,6 @@ public class GlobalClass {
 	public static boolean debugMode = true;
 	public static String SerializableFileName = "bt.dat";
 	public static Boolean doSerializable = true;
-	public static int maxBTreePages = 100;
+	public static int maxBTreePages = 10000;
 
 }

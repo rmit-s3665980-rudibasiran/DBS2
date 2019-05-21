@@ -117,23 +117,29 @@ public class dbquery {
 				}
 
 				// search for queried text
-				if (da_name.contains(textSearch)) {
+				if (da_name.toUpperCase().contains(textSearch.toUpperCase())
+						|| street_name.toUpperCase().contains(textSearch.toUpperCase())
+						|| in_violation.toUpperCase().contains(textSearch.toUpperCase())) {
 					numFound++;
-					String s = "Found in record [" + x + "] in Page[" + numPage + "]: " + device_id + "-->"
-							+ arrival_time + "-->" + duration_seconds + "-->" + street_name + "--> " + side_of_street
-							+ "-->" + in_violation + "\n";
+					String s = "Found [" + textSearch + "] in record [" + x + "] in Page[" + numPage + "]: " + device_id
+							+ "-->" + arrival_time + "-->" + duration_seconds + "-->" + street_name + "--> "
+							+ side_of_street + "-->" + in_violation + "\n";
 					Helper.loggerMatch(s);
 					System.out.println(s);
 
 				}
 
 			}
+			String s = "Total matches found: " + numFound;
+			Helper.loggerMatch(s);
+			System.out.println(s);
 
 		}
 		long endTime = System.nanoTime();
 		long totalTime = endTime - startTime;
 
 		Helper.logger(ttlNumRec, numPage, totalTime, GlobalClass.logSearch);
+		System.out.println("Total Time Taken: " + Long.toString(totalTime / 1000000) + " ms");
 		Helper.drawLine();
 
 	}

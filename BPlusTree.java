@@ -7,7 +7,7 @@ public class BPlusTree implements Serializable {
 	}
 
 	public void insert(String key, String value) {
-		System.out.println("Adding key/value: " + key + "/" + value);
+		System.out.println("Adding key => value: " + key + " => " + value);
 
 	}
 
