@@ -12,7 +12,9 @@ import java.nio.ByteBuffer;
  */
 
 public class dbload implements dbimpl {
+	private bPlusTree _bt = new bPlusTree();
 	// initialize
+
 	public static void main(String args[]) {
 		dbload load = new dbload();
 
@@ -22,6 +24,8 @@ public class dbload implements dbimpl {
 		long endTime = System.currentTimeMillis();
 
 		System.out.println("Load time: " + (endTime - startTime) + "ms");
+	
+		
 	}
 
 	// reading command line arguments
@@ -48,6 +52,7 @@ public class dbload implements dbimpl {
 	}
 
 	// read .csv file using buffered reader
+	@SuppressWarnings("unchecked")
 	public void readFile(String filename, int pagesize) {
 		dbload load = new dbload();
 		File heapfile = new File(HEAP_FNAME + pagesize);
@@ -68,6 +73,14 @@ public class dbload implements dbimpl {
 			while ((line = br.readLine()) != null) {
 				String[] entry = line.split(stringDelimeter, -1);
 				RECORD = createRecord(RECORD, entry, outCount);
+
+				String recordStr = new String(RECORD);
+				String DEVICE_ID = recordStr.substring(RID_SIZE, RID_SIZE + DEVICE_ID_SIZE);
+				String DA_NAME = recordStr.substring(RID_SIZE, RID_SIZE + DEVICE_ID_SIZE + ARRIVAL_TIME_SIZE);
+				String ST_NAME = recordStr.substring(STREET_NAME_OFFSET, STREET_NAME_OFFSET + STREET_NAME_SIZE);
+
+				_bt.insert(DA_NAME, ST_NAME);
+
 				// outCount is to count record and reset everytime
 				// the number of bytes has exceed the pagesize
 				outCount++;
@@ -101,6 +114,15 @@ public class dbload implements dbimpl {
 		}
 		System.out.println("Page total: " + pageCount);
 		System.out.println("Record total: " + recCount);
+
+		long queryStartTime = System.currentTimeMillis();
+		System.out.println("Searching for 18709: ");
+		System.out.println(_bt.search("18036"));
+		System.out.println("Searching for Bourke: ");
+		System.out.println(_bt.search("Bourke"));
+		long queryEndTime = System.currentTimeMillis();
+		System.out.println("Search time: " + (queryEndTime - queryStartTime) + "ms");
+
 	}
 
 	// create byte array for a field and append to record array at correct
@@ -134,6 +156,7 @@ public class dbload implements dbimpl {
 		copy(entry[11], SIDE_OF_STREET_SIZE, SIDE_OF_STREET_OFFSET, rec);
 		copy(entry[12], VIOLATION_SIZE, VIOLATION_OFFSET, rec);
 
+		
 		return rec;
 	}
 

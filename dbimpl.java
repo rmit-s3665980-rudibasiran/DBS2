@@ -138,6 +138,10 @@ public interface dbimpl {
 
    public boolean isInteger(String s);
 
+   public static final int GET_KEY = 0;
+   public static final int GET_VALUE = 1;
+   // public static final int DEFAULT_BRANCHING_FACTOR = 16384;
+   public static final int DEFAULT_BRANCHING_FACTOR = 1024;
    public static void drawLine() {
 		for (int x = 0; x < 50; x++)
 			System.out.print("-");
