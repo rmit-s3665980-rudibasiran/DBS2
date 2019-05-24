@@ -25,7 +25,7 @@ public class dbload implements dbimpl {
 
 		System.out.println("Load time: " + (endTime - startTime) + "ms");
 	
-		
+			
 	}
 
 	// reading command line arguments
@@ -75,11 +75,12 @@ public class dbload implements dbimpl {
 				RECORD = createRecord(RECORD, entry, outCount);
 
 				String recordStr = new String(RECORD);
-				String DEVICE_ID = recordStr.substring(RID_SIZE, RID_SIZE + DEVICE_ID_SIZE);
+				// String DEVICE_ID = recordStr.substring(RID_SIZE, RID_SIZE + DEVICE_ID_SIZE);
 				String DA_NAME = recordStr.substring(RID_SIZE, RID_SIZE + DEVICE_ID_SIZE + ARRIVAL_TIME_SIZE);
 				String ST_NAME = recordStr.substring(STREET_NAME_OFFSET, STREET_NAME_OFFSET + STREET_NAME_SIZE);
 
 				_bt.insert(DA_NAME, ST_NAME);
+				// _bt.insert(DA_NAME, Integer.toString(pageCount));
 
 				// outCount is to count record and reset everytime
 				// the number of bytes has exceed the pagesize
@@ -116,12 +117,14 @@ public class dbload implements dbimpl {
 		System.out.println("Record total: " + recCount);
 
 		long queryStartTime = System.currentTimeMillis();
-		System.out.println("Searching for 18709: ");
-		System.out.println(_bt.search("18036"));
+		System.out.println("Searching for 18741: ");
+		System.out.println(_bt.search("18741"));
 		System.out.println("Searching for Bourke: ");
 		System.out.println(_bt.search("Bourke"));
 		long queryEndTime = System.currentTimeMillis();
 		System.out.println("Search time: " + (queryEndTime - queryStartTime) + "ms");
+		if (saveTreeToDisk)
+			doSaveTreeToDisk();
 
 	}
 
@@ -174,5 +177,9 @@ public class dbload implements dbimpl {
 		ByteBuffer bBuffer = ByteBuffer.allocate(4);
 		bBuffer.putInt(i);
 		return bBuffer.array();
+	}
+
+	public void doSaveTreeToDisk() {
+
 	}
 }

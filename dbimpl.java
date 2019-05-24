@@ -138,8 +138,11 @@ public interface dbimpl {
 
    public boolean isInteger(String s);
 
-   public static final int GET_KEY = 0;
-   public static final int GET_VALUE = 1;
+   public static final String bPlusTreeFileName = "bt.dat";
+   public static final Boolean saveTreeToDisk = true;
+
+   public static final boolean DEBUG_MODE = true;
+   public static final String DEBUG_MODE_STR = "18741";
    // public static final int DEFAULT_BRANCHING_FACTOR = 16384;
    public static final int DEFAULT_BRANCHING_FACTOR = 1024;
    public static void drawLine() {
