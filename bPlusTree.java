@@ -6,12 +6,9 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Queue;
 
-public class bPlusTree<K extends Comparable<? super K>, V> {
-
-
+public class bPlusTree {
 
 	private int branchingFactor;
-
 	private Node root;
 
 	public bPlusTree() {
@@ -27,18 +24,16 @@ public class bPlusTree<K extends Comparable<? super K>, V> {
 	}
 
 	@SuppressWarnings("unchecked")
-	public V search(K key) {
+	public String search(String key) {
 		return root.getValue(key);
 	}
 
 	@SuppressWarnings("unchecked")
-	public void insert(K key, V value) {
-
+	public void insert(String key, String value) {
 		root.insertValue(key, value);
 	}
 
-
-	public void delete(K key) {
+	public void delete(String key) {
 		root.deleteValue(key);
 	}
 
@@ -68,24 +63,23 @@ public class bPlusTree<K extends Comparable<? super K>, V> {
 			}
 			queue = nextQueue;
 		}
-
 		return sb.toString();
 	}
 
 	private abstract class Node {
-		List<K> keys;
+		List<String> keys;
 
 		int keyNumber() {
 			return keys.size();
 		}
 
-		abstract V getValue(K key);
+		abstract String getValue(String key);
 
-		abstract void deleteValue(K key);
+		abstract void deleteValue(String key);
 
-		abstract void insertValue(K key, V value);
+		abstract void insertValue(String key, String value);
 
-		abstract K getFirstLeafKey();
+		abstract String getFirstLeafKey();
 
 		abstract void merge(Node sibling);
 
@@ -104,17 +98,17 @@ public class bPlusTree<K extends Comparable<? super K>, V> {
 		List<Node> children;
 
 		intNode() {
-			this.keys = new ArrayList<K>();
+			this.keys = new ArrayList<String>();
 			this.children = new ArrayList<Node>();
 		}
 
 		@Override
-		V getValue(K key) {
+		String getValue(String key) {
 			return getChild(key).getValue(key);
 		}
 
 		@Override
-		void deleteValue(K key) {
+		void deleteValue(String key) {
 			Node child = getChild(key);
 			child.deleteValue(key);
 			if (child.isUnderflow()) {
@@ -135,7 +129,7 @@ public class bPlusTree<K extends Comparable<? super K>, V> {
 		}
 
 		@Override
-		void insertValue(K key, V value) {
+		void insertValue(String key, String value) {
 			Node child = getChild(key);
 			System.out.println("Adding key/value in intNode: " + key + "/" + value);
 			child.insertValue(key, value);
@@ -154,7 +148,7 @@ public class bPlusTree<K extends Comparable<? super K>, V> {
 		}
 
 		@Override
-		K getFirstLeafKey() {
+		String getFirstLeafKey() {
 			return children.get(0).getFirstLeafKey();
 		}
 
@@ -193,13 +187,13 @@ public class bPlusTree<K extends Comparable<? super K>, V> {
 			return children.size() < (branchingFactor + 1) / 2;
 		}
 
-		Node getChild(K key) {
+		Node getChild(String key) {
 			int loc = Collections.binarySearch(keys, key);
 			int childIndex = loc >= 0 ? loc + 1 : -loc - 1;
 			return children.get(childIndex);
 		}
 
-		void deleteChild(K key) {
+		void deleteChild(String key) {
 			int loc = Collections.binarySearch(keys, key);
 			if (loc >= 0) {
 				keys.remove(loc);
@@ -207,7 +201,7 @@ public class bPlusTree<K extends Comparable<? super K>, V> {
 			}
 		}
 
-		void insertChild(K key, Node child) {
+		void insertChild(String key, Node child) {
 			int loc = Collections.binarySearch(keys, key);
 			int childIndex = loc >= 0 ? loc + 1 : -loc - 1;
 			if (loc >= 0) {
@@ -218,7 +212,7 @@ public class bPlusTree<K extends Comparable<? super K>, V> {
 			}
 		}
 
-		Node getChildLeftSibling(K key) {
+		Node getChildLeftSibling(String key) {
 			int loc = Collections.binarySearch(keys, key);
 			int childIndex = loc >= 0 ? loc + 1 : -loc - 1;
 			if (childIndex > 0)
@@ -227,7 +221,7 @@ public class bPlusTree<K extends Comparable<? super K>, V> {
 			return null;
 		}
 
-		Node getChildRightSibling(K key) {
+		Node getChildRightSibling(String key) {
 			int loc = Collections.binarySearch(keys, key);
 			int childIndex = loc >= 0 ? loc + 1 : -loc - 1;
 			if (childIndex < keyNumber())
@@ -238,16 +232,16 @@ public class bPlusTree<K extends Comparable<? super K>, V> {
 	}
 
 	private class leafNode extends Node {
-		List<V> values;
+		List<String> values;
 		leafNode next;
 
 		leafNode() {
-			keys = new ArrayList<K>();
-			values = new ArrayList<V>();
+			keys = new ArrayList<String>();
+			values = new ArrayList<String>();
 		}
 
 		@Override
-		V getValue(K key) {
+		String getValue(String key) {
 
 			for (int i = 0; i < keys.size(); i++) {
 				
@@ -265,7 +259,7 @@ public class bPlusTree<K extends Comparable<? super K>, V> {
 		}
 
 		@Override
-		void deleteValue(K key) {
+		void deleteValue(String key) {
 			int loc = Collections.binarySearch(keys, key);
 			if (loc >= 0) {
 				keys.remove(loc);
@@ -274,7 +268,7 @@ public class bPlusTree<K extends Comparable<? super K>, V> {
 		}
 
 		@Override
-		void insertValue(K key, V value) {
+		void insertValue(String key, String value) {
 			
 			int loc = Collections.binarySearch(keys, key);
 			int valueIndex = loc >= 0 ? loc : -loc - 1;
@@ -297,7 +291,7 @@ public class bPlusTree<K extends Comparable<? super K>, V> {
 		}
 
 		@Override
-		K getFirstLeafKey() {
+		String getFirstLeafKey() {
 			return keys.get(0);
 		}
 

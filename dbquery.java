@@ -108,10 +108,13 @@ public class dbquery implements dbimpl {
       // substring (start index, end index)
 		String ST_NAME = record.substring(STREET_NAME_OFFSET, STREET_NAME_OFFSET + STREET_NAME_SIZE);
 		String DEVICE_ID = record.substring(RID_SIZE, RID_SIZE + DEVICE_ID_SIZE);
+		String ARRIVAL_TIME = record.substring(ARRIVAL_TIME_OFFSET, ARRIVAL_TIME_OFFSET + ARRIVAL_TIME_SIZE);
 		if (ST_NAME.toLowerCase().contains(input.toLowerCase())
-				|| DEVICE_ID.toLowerCase().contains(input.toLowerCase())) {
+			|| ARRIVAL_TIME.toLowerCase().contains(input.toLowerCase())
+			|| DEVICE_ID.toLowerCase().contains(input.toLowerCase())) {
 			
-         System.out.println("DEVICE_ID: " + DEVICE_ID);
+		 System.out.println("DEVICE_ID: " + DEVICE_ID);
+         System.out.println("ARRIVAL_TIME: " + ARRIVAL_TIME);
          System.out.println("STREET_NAME: " + ST_NAME);
          dbimpl.drawLine();
 		}
