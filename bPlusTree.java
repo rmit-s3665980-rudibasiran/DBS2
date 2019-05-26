@@ -66,7 +66,6 @@ public class bPlusTree  {
 			return keys.size();
 		}
 
-
 		abstract String getValue(String key);
 
 		abstract void traverse(FileOutputStream fos);
@@ -115,7 +114,7 @@ public class bPlusTree  {
 			for (int i = 0; i < children.size(); i++) {
 				numKeys = 0;
 				for (int j = 0; j < children.get(i).keys.size(); j++) {
-					if (dbimpl.saveTreeToDiskKeys) {
+					if (dbimpl.showTreeKeys) {
 						System.out.println("innerNode [" + i + "] key ]" + j + "]:" + children.get(i).keys.get(j).toString());
 					}
 					numKeys = j;
@@ -260,6 +259,7 @@ public class bPlusTree  {
 
 			for (int i = 0; i < keys.size(); i++) {
 				
+				// System.out.println("Keys: " + keys.get(i));
 				String s = keys.get(i).toString(); 
 				String k = key.toString();
 				String v = values.get(i).toString();
@@ -267,7 +267,7 @@ public class bPlusTree  {
 				if (key != dbimpl.DEFAULT_KEY_STRING) {
 					if (s.toLowerCase().contains(k.toLowerCase()) 
 						|| v.toLowerCase().contains(k.toLowerCase())) {
-						System.out.println("Found in leafNode [" + k + "]: " + i + " / " + s + " / " + v);
+						System.out.println("Found in leafNode [" + k + "]: " + s + " ==> " + v);
 					}
 				}
 			}
@@ -280,23 +280,19 @@ public class bPlusTree  {
 		public void traverse(FileOutputStream fos) {
 			visited = true;
 			byte[] record = new byte[dbimpl.treeRecordSize];
-			// String[] key;
 			for (int i = 0; i < keys.size(); i++) {
 				String s = keys.get(i).toString(); 
 				String v = values.get(i).toString();
-				String out = s + ";" + v;
+				String out = s + "," + v + ",";
 				record = out.getBytes();
-				if (dbimpl.saveTreeToDiskKeysValues) {
-					try {
-						fos.write(record);
-					}
-					catch (FileNotFoundException e) {
-						System.out.println("File: " + dbimpl.bPlusTreeFileName + " not found.");
-					} catch (Exception e) {
-						e.printStackTrace();
-					}
+				try {
+					fos.write(record);
 				}
-					
+				catch (FileNotFoundException e) {
+					System.out.println("File: " + dbimpl.bPlusTreeFileName + " not found.");
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
 			}
 		}
 
@@ -310,14 +306,12 @@ public class bPlusTree  {
 					if (key.toLowerCase().contains(dbimpl.DEBUG_MODE_SEARCH_STR))
 						System.out.println("[a] Adding key/value in leafNode: " + valueIndex + " / " + key + "/" + value);
 				}
-		
 				values.set(valueIndex, value);
 			} else {
 				if (dbimpl.DEBUG_MODE_SHOW_INSERT) {
 					if (key.toLowerCase().contains(dbimpl.DEBUG_MODE_SEARCH_STR))
 						System.out.println("[b] Adding key/value in leafNode: " + valueIndex + " / " + key + "/" + value);
 				}
-					
 				keys.add(valueIndex, key);
 				values.add(valueIndex, value);
 			}
@@ -326,7 +320,6 @@ public class bPlusTree  {
 					if (key.toLowerCase().contains(dbimpl.DEBUG_MODE_SEARCH_STR))
 						System.out.println("[c] Overflow in leafNode: " + valueIndex + " / " + key + "/" + value);
 				}
-					
 				Node sibling = split();
 				innerNode newRoot = new innerNode();
 				newRoot.keys.add(sibling.getFirstLeafKey());

@@ -75,6 +75,7 @@ public class dbload implements dbimpl {
 				RECORD = createRecord(RECORD, entry, outCount);
 
 				String recordStr = new String(RECORD);
+		
 				// String DEVICE_ID = recordStr.substring(RID_SIZE, RID_SIZE + DEVICE_ID_SIZE);
 				String DA_NAME = recordStr.substring(RID_SIZE, RID_SIZE + DEVICE_ID_SIZE + ARRIVAL_TIME_SIZE);
 				String ST_NAME = recordStr.substring(STREET_NAME_OFFSET, STREET_NAME_OFFSET + STREET_NAME_SIZE);
@@ -119,11 +120,15 @@ public class dbload implements dbimpl {
 		if (saveTreeToDisk)
 			doSaveTreeToDisk();
 
-		long queryStartTime = System.currentTimeMillis();
-		System.out.println("Searching for [" + DEBUG_MODE_SEARCH_STR + "]: ");
-		System.out.println(_bt.search(DEBUG_MODE_SEARCH_STR));
-		long queryEndTime = System.currentTimeMillis();
-		System.out.println("Search time: " + (queryEndTime - queryStartTime) + "ms");
+		// check bt
+		if (DEBUG_CHK_BUILD) {
+			long queryStartTime = System.currentTimeMillis();
+			System.out.println("Searching for [" + DEBUG_MODE_SEARCH_STR + "]: ");
+			System.out.println(_bt.search(DEBUG_MODE_SEARCH_STR));
+			long queryEndTime = System.currentTimeMillis();
+			System.out.println("Search time: " + (queryEndTime - queryStartTime) + "ms");
+		}
+	
 	}
 
 	// create byte array for a field and append to record array at correct
@@ -157,7 +162,6 @@ public class dbload implements dbimpl {
 		copy(entry[11], SIDE_OF_STREET_SIZE, SIDE_OF_STREET_OFFSET, rec);
 		copy(entry[12], VIOLATION_SIZE, VIOLATION_OFFSET, rec);
 
-		
 		return rec;
 	}
 

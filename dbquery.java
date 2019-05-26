@@ -9,26 +9,73 @@ import java.nio.ByteBuffer;
  */
 
 public class dbquery implements dbimpl {
+	private bPlusTree _bt = new bPlusTree();
 	// initialize
 	public static void main(String args[]) {
 		dbquery load = new dbquery();
 
 		// calculate query time
 		long startTime = System.currentTimeMillis();
+
+		// java dbquery searchtext heapsize flag [-b or -h]
 		load.readArguments(args);
 		long endTime = System.currentTimeMillis();
 
 		System.out.println("Query time: " + (endTime - startTime) + "ms");
+		dbimpl.drawLine();
 	}
 
 	// reading command line arguments
 	public void readArguments(String args[]) {
-		if (args.length == 2) {
-			if (isInteger(args[1])) {
-				readHeap(args[0], Integer.parseInt(args[1]));
+		if (args.length == 3) {
+			if (args[2].equals("-h")) {
+				if (isInteger(args[1])) {
+					System.out.println("Search Heap File for [" + args[0] + "]");
+					readHeap(args[0], Integer.parseInt(args[1]));
+				}
 			}
+			else if (args[2].equals("-b")) {
+
+				// read b+ tree records from disk and re-buidling tree
+				readBTree(args[0]);
+
+				long queryStartTime = System.currentTimeMillis();
+				System.out.println("Searching Actual B+ Tree for [" + args[0] + "]: ");
+				System.out.println(_bt.search(args[0]));
+				long queryEndTime = System.currentTimeMillis();
+				System.out.println("Search time: " + (queryEndTime - queryStartTime) + "ms");
+			}
+
 		} else {
-			System.out.println("Error: only pass in two arguments");
+			System.out.println("Error: Pass in 3 arguments: dbquery searchtext heapfile flag[-b/-h]");
+		}
+	}
+
+	public void readBTree (String searchValue) {
+		File btreeFilename = new File(bPlusTreeFileName);
+		try (FileInputStream fis = new FileInputStream(btreeFilename)) {
+			boolean haveNextRecord = true;
+		
+			while (haveNextRecord) {
+				byte[] buf = new byte[treeRecordSize];
+				int i = fis.read(buf, 0, treeRecordSize);
+				String rec = new String(buf);
+				if (i != -1) {
+					String key = rec.split("[,]")[0];
+					String val = rec.split("[,]")[1];
+
+					// rebuild tree
+					_bt.insert(key, val);
+				}
+				else 
+					haveNextRecord = false;
+			} 
+			fis.close();
+		}
+		 catch (FileNotFoundException e) {
+			System.out.println("File: " + btreeFilename + " not found.");
+		} catch (IOException e) {
+			e.printStackTrace();
 		}
 	}
 
@@ -54,6 +101,7 @@ public class dbquery implements dbimpl {
 		int rid = 0;
 		boolean isNextPage = true;
 		boolean isNextRecord = true;
+		
 		try {
 			FileInputStream fis = new FileInputStream(heapfile);
 			// reading page by page
@@ -109,14 +157,11 @@ public class dbquery implements dbimpl {
 		String ST_NAME = record.substring(STREET_NAME_OFFSET, STREET_NAME_OFFSET + STREET_NAME_SIZE);
 		String DEVICE_ID = record.substring(RID_SIZE, RID_SIZE + DEVICE_ID_SIZE);
 		String ARRIVAL_TIME = record.substring(ARRIVAL_TIME_OFFSET, ARRIVAL_TIME_OFFSET + ARRIVAL_TIME_SIZE);
+
 		if (ST_NAME.toLowerCase().contains(input.toLowerCase())
 			|| ARRIVAL_TIME.toLowerCase().contains(input.toLowerCase())
 			|| DEVICE_ID.toLowerCase().contains(input.toLowerCase())) {
-			
-		 System.out.println("DEVICE_ID: " + DEVICE_ID);
-         System.out.println("ARRIVAL_TIME: " + ARRIVAL_TIME);
-         System.out.println("STREET_NAME: " + ST_NAME);
-         dbimpl.drawLine();
+			System.out.println("Found in Heap File [" + input + "]: " + DEVICE_ID + "/" + ARRIVAL_TIME + " ==> " + ST_NAME);
 		}
 	}
 }
