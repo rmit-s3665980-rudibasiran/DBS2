@@ -141,6 +141,8 @@ public interface dbimpl {
    public static final String bPlusTreeFileName = "bt.dat";
    public static final Boolean saveTreeToDisk = true;
    public static final String DEFAULT_KEY_STRING = "-";
+   public static final Boolean saveTreeToDiskKeys = false;
+   public static final Boolean saveTreeToDiskKeysValues = false;
 
    public static final boolean DEBUG_MODE = true;
    public static final boolean DEBUG_MODE_SHOW_INSERT = false;

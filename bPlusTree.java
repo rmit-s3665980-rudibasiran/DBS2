@@ -20,8 +20,8 @@ public class bPlusTree  {
 		return root.getValue(key);
 	}
 
-	public String showTree(String key) {
-		return root.traverse(key);
+	public void showTree(String key) {
+		root.traverse(key);
 	}
 
 	public void insert(String key, String value) {
@@ -64,11 +64,10 @@ public class bPlusTree  {
 			return keys.size();
 		}
 
-		
 
 		abstract String getValue(String key);
 
-		abstract String traverse(String key);
+		abstract void traverse(String key);
 
 		abstract boolean isVisited();
 
@@ -109,17 +108,24 @@ public class bPlusTree  {
 		}
 
 		@Override
-		public String traverse(String key) {
-
-			// traversing
+		public void traverse (String key) {
+			int numKeys = 0;
+			for (int i = 0; i < children.size(); i++) {
+				numKeys = 0;
+				for (int j = 0; j < children.get(i).keys.size(); j++) {
+					if (dbimpl.saveTreeToDiskKeys) {
+						System.out.println("innerNode [" + i + "] key ]" + j + "]:" + children.get(i).keys.get(j).toString());
+					}
+					numKeys = j;
+				}
+				System.out.println("innerNode [" + i + "] number of keys [" + numKeys + "]");
+			}
 			for (int i = 0; i < children.size(); i++) {
 				if (!children.get(i).isVisited()) {
 					children.get(i).traverse(key);
 					visited = true;
 				}
 			}
-			// return getChild(key).traverse(key);
-			return null;
 		}
 
 		@Override
@@ -269,16 +275,14 @@ public class bPlusTree  {
 		}
 
 		@Override
-		public String traverse(String key) {
+		public void traverse(String key) {
 			visited = true;
 			for (int i = 0; i < keys.size(); i++) {
 				String s = keys.get(i).toString(); 
 				String v = values.get(i).toString();
-				System.out.println(s + " ==> " + v);
+				if (dbimpl.saveTreeToDiskKeysValues)
+					System.out.println(s + " ==> " + v);
 			}
-			int loc = Collections.binarySearch(keys, key);
-			// return loc >= 0 ? values.get(loc) : null;
-			return null;
 		}
 
 		@Override
