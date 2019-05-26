@@ -16,19 +16,16 @@ public class bPlusTree  {
 		root = new leafNode();
 	}
 
-	// @SuppressWarnings("unchecked")
 	public String search(String key) {
 		return root.getValue(key);
 	}
 
-
-	// @SuppressWarnings("unchecked")
-	public void insert(String key, String value) {
-		root.insertValue(key, value);
+	public String showTree(String key) {
+		return root.traverse(key);
 	}
 
-	public void delete(String key) {
-		root.deleteValue(key);
+	public void insert(String key, String value) {
+		root.insertValue(key, value);
 	}
 
 	public String toString() {
@@ -67,9 +64,13 @@ public class bPlusTree  {
 			return keys.size();
 		}
 
+		
+
 		abstract String getValue(String key);
 
-		abstract void deleteValue(String key);
+		abstract String traverse(String key);
+
+		abstract boolean isVisited();
 
 		abstract void insertValue(String key, String value);
 
@@ -90,6 +91,7 @@ public class bPlusTree  {
 
 	public class innerNode extends Node {
 		List<Node> children;
+		Boolean visited = false;
 
 		public innerNode() {
 			this.keys = new ArrayList<String>();
@@ -97,45 +99,27 @@ public class bPlusTree  {
 		}
 
 		@Override
+		public boolean isVisited() {
+			return visited;
+		}
+
+		@Override
 		public String getValue(String key) {
-
-			// traversing
-			for (int i = 0; i < children.size(); i++) {
-				for (int j = 0; j < children.get(i).keys.size(); j++) {
-				
-					String s = children.get(i).keys.get(j).toString(); 
-					String k = key.toString();
-					
-					if (s.toLowerCase().contains(k.toLowerCase())) {
-						System.out.println("Found in innerNode " + i + " [" + k + "]: " + j + " / " + s);
-					}
-				}
-			}
-			
-
-
 			return getChild(key).getValue(key);
 		}
 
-
 		@Override
-		public void deleteValue(String key) {
-			Node child = getChild(key);
-			child.deleteValue(key);
-			if (child.isUnderflow()) {
-				Node childLeftSibling = getChildLeftSibling(key);
-				Node childRightSibling = getChildRightSibling(key);
-				Node left = childLeftSibling != null ? childLeftSibling : child;
-				Node right = childLeftSibling != null ? child : childRightSibling;
-				left.merge(right);
-				deleteChild(right.getFirstLeafKey());
-				if (left.isOverflow()) {
-					Node sibling = left.split();
-					insertChild(sibling.getFirstLeafKey(), sibling);
+		public String traverse(String key) {
+
+			// traversing
+			for (int i = 0; i < children.size(); i++) {
+				if (!children.get(i).isVisited()) {
+					children.get(i).traverse(key);
+					visited = true;
 				}
-				if (root.keySize() == 0)
-					root = left;
 			}
+			// return getChild(key).traverse(key);
+			return null;
 		}
 
 		@Override
@@ -167,11 +151,9 @@ public class bPlusTree  {
 		public String getFirstLeafKey() {
 			return children.get(0).getFirstLeafKey();
 		}
-
 	
 		@Override
 		public void merge(Node sibling) {
-			// @SuppressWarnings("unchecked")
 			innerNode node = (innerNode) sibling;
 			keys.add(node.getFirstLeafKey());
 			keys.addAll(node.keys);
@@ -253,12 +235,17 @@ public class bPlusTree  {
 	public class leafNode extends Node {
 		List<String> values;
 		leafNode next;
+		Boolean visited = false;
 
 		public leafNode() {
 			keys = new ArrayList<String>();
 			values = new ArrayList<String>();
 		}
 
+		@Override
+		public boolean isVisited() {
+			return visited;
+		}
 
 		@Override
 		public String getValue(String key) {
@@ -269,9 +256,11 @@ public class bPlusTree  {
 				String k = key.toString();
 				String v = values.get(i).toString();
 				
-				if (s.toLowerCase().contains(k.toLowerCase()) 
+				if (key != dbimpl.DEFAULT_KEY_STRING) {
+					if (s.toLowerCase().contains(k.toLowerCase()) 
 						|| v.toLowerCase().contains(k.toLowerCase())) {
-					System.out.println("Found in leafNode [" + k + "]: " + i + " / " + s + " / " + v);
+						System.out.println("Found in leafNode [" + k + "]: " + i + " / " + s + " / " + v);
+					}
 				}
 			}
 
@@ -280,12 +269,16 @@ public class bPlusTree  {
 		}
 
 		@Override
-		public void deleteValue(String key) {
-			int loc = Collections.binarySearch(keys, key);
-			if (loc >= 0) {
-				keys.remove(loc);
-				values.remove(loc);
+		public String traverse(String key) {
+			visited = true;
+			for (int i = 0; i < keys.size(); i++) {
+				String s = keys.get(i).toString(); 
+				String v = values.get(i).toString();
+				System.out.println(s + " ==> " + v);
 			}
+			int loc = Collections.binarySearch(keys, key);
+			// return loc >= 0 ? values.get(loc) : null;
+			return null;
 		}
 
 		@Override
@@ -329,10 +322,8 @@ public class bPlusTree  {
 			return keys.get(0);
 		}
 
-
 		@Override
 		public void merge(Node sibling) {
-			// @SuppressWarnings("unchecked")
 			leafNode node = (leafNode) sibling;
 			keys.addAll(node.keys);
 			values.addAll(node.values);

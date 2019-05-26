@@ -140,12 +140,13 @@ public interface dbimpl {
 
    public static final String bPlusTreeFileName = "bt.dat";
    public static final Boolean saveTreeToDisk = true;
+   public static final String DEFAULT_KEY_STRING = "-";
 
    public static final boolean DEBUG_MODE = true;
    public static final boolean DEBUG_MODE_SHOW_INSERT = false;
    // public static final String DEBUG_MODE_SEARCH_STR = "18741";
-   // public static final String DEBUG_MODE_SEARCH_STR = "22284";
-   public static final String DEBUG_MODE_SEARCH_STR = "-";
+   public static final String DEBUG_MODE_SEARCH_STR = "22284";
+   // public static final String DEBUG_MODE_SEARCH_STR = "-";
    
    // public static final int DEFAULT_BRANCHING_FACTOR = 16384;
    public static final int DEFAULT_BRANCHING_FACTOR = 1024;

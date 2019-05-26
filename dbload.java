@@ -116,14 +116,18 @@ public class dbload implements dbimpl {
 		System.out.println("Page total: " + pageCount);
 		System.out.println("Record total: " + recCount);
 
+	
+
+		if (saveTreeToDisk)
+			doSaveTreeToDisk();
+
 		long queryStartTime = System.currentTimeMillis();
 		System.out.println("Searching for [" + DEBUG_MODE_SEARCH_STR + "]: ");
 		System.out.println(_bt.search(DEBUG_MODE_SEARCH_STR));
 		long queryEndTime = System.currentTimeMillis();
 		System.out.println("Search time: " + (queryEndTime - queryStartTime) + "ms");
 
-		if (saveTreeToDisk)
-			doSaveTreeToDisk();
+
 
 	}
 
@@ -179,6 +183,6 @@ public class dbload implements dbimpl {
 	}
 
 	public void doSaveTreeToDisk() {
-
+		_bt.showTree(DEFAULT_KEY_STRING);
 	}
 }
