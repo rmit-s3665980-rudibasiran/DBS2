@@ -140,11 +140,11 @@ public interface dbimpl {
 
 
    // b+ tree global variables
-   public static final String bPlusTreeFileName = "bt.dat";
-   public static final Boolean saveTreeToDisk = true;
+   public static final String BPLUS_TREE_FILE_NAME = "bt.dat";
+   public static final Boolean SAVE_TREE_TO_DISK = true;
    public static final String DEFAULT_KEY_STRING = "-";
-   public static final Boolean showTreeKeys = false;
-   public static final int treeRecordSize = DEVICE_ID_SIZE + ARRIVAL_TIME_SIZE + STREET_NAME_SIZE + 2;
+   public static final Boolean SHOW_TREE_KEYS = false;
+   public static final int TREE_RECORD_SIZE = DEVICE_ID_SIZE + ARRIVAL_TIME_SIZE + STREET_NAME_SIZE + 2;
    public static final boolean DEBUG_MODE = true;
    public static final boolean DEBUG_CHK_BUILD = false;
    public static final boolean SEARCH_ACTUAL_BTREE = true;

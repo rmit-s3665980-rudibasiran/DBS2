@@ -12,7 +12,7 @@ import java.nio.ByteBuffer;
  */
 
 public class dbload implements dbimpl {
-	private bPlusTree _bt = new bPlusTree();
+	private bplustree _bt = new bplustree();
 	// initialize
 
 	public static void main(String args[]) {
@@ -117,7 +117,7 @@ public class dbload implements dbimpl {
 		System.out.println("Page total: " + pageCount);
 		System.out.println("Record total: " + recCount);
 
-		if (saveTreeToDisk)
+		if (SAVE_TREE_TO_DISK)
 			doSaveTreeToDisk();
 
 		// check bt
@@ -186,11 +186,11 @@ public class dbload implements dbimpl {
 		FileOutputStream fosTree = null;
 
 		try {
-			fosTree = new FileOutputStream(bPlusTreeFileName);
+			fosTree = new FileOutputStream(BPLUS_TREE_FILE_NAME);
 			_bt.showTree(fosTree);
 			fosTree.close();
 		} catch (FileNotFoundException e) {
-			System.out.println("File: " + bPlusTreeFileName + " not found.");
+			System.out.println("File: " + BPLUS_TREE_FILE_NAME + " not found.");
 		} catch (Exception e) {
 			e.printStackTrace();
 		}

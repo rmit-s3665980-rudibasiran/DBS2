@@ -9,7 +9,7 @@ import java.nio.ByteBuffer;
  */
 
 public class dbquery implements dbimpl {
-	private bPlusTree _bt = new bPlusTree();
+	private bplustree _bt = new bplustree();
 	// initialize
 	public static void main(String args[]) {
 		dbquery load = new dbquery();
@@ -54,13 +54,13 @@ public class dbquery implements dbimpl {
 	}
 
 	public void readBTree (String searchValue) {
-		File btreeFilename = new File(bPlusTreeFileName);
+		File btreeFilename = new File(BPLUS_TREE_FILE_NAME);
 		try (FileInputStream fis = new FileInputStream(btreeFilename)) {
 			boolean haveNextRecord = true;
 		
 			while (haveNextRecord) {
-				byte[] buf = new byte[treeRecordSize];
-				int i = fis.read(buf, 0, treeRecordSize);
+				byte[] buf = new byte[TREE_RECORD_SIZE];
+				int i = fis.read(buf, 0, TREE_RECORD_SIZE);
 				String rec = new String(buf);
 				if (i != -1) {
 					String key = rec.split("[,]")[0];
