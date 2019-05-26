@@ -117,12 +117,11 @@ public class dbload implements dbimpl {
 		System.out.println("Record total: " + recCount);
 
 		long queryStartTime = System.currentTimeMillis();
-		System.out.println("Searching for 18741: ");
-		System.out.println(_bt.search("18741"));
-		System.out.println("Searching for Bourke: ");
-		System.out.println(_bt.search("Bourke"));
+		System.out.println("Searching for [" + DEBUG_MODE_SEARCH_STR + "]: ");
+		System.out.println(_bt.search(DEBUG_MODE_SEARCH_STR));
 		long queryEndTime = System.currentTimeMillis();
 		System.out.println("Search time: " + (queryEndTime - queryStartTime) + "ms");
+
 		if (saveTreeToDisk)
 			doSaveTreeToDisk();
 

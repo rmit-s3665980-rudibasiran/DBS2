@@ -21,6 +21,7 @@ public class bPlusTree  {
 		return root.getValue(key);
 	}
 
+
 	// @SuppressWarnings("unchecked")
 	public void insert(String key, String value) {
 		root.insertValue(key, value);
@@ -45,8 +46,8 @@ public class bPlusTree  {
 					sb.append(node.toString());
 					if (it.hasNext())
 						sb.append(", ");
-					if (node instanceof bPlusTree.intNode)
-						nextQueue.add(((intNode) node).children);
+					if (node instanceof bPlusTree.innerNode)
+						nextQueue.add(((innerNode) node).children);
 				}
 				sb.append('}');
 				if (!queue.isEmpty())
@@ -87,18 +88,35 @@ public class bPlusTree  {
 		}
 	}
 
-	public class intNode extends Node {
+	public class innerNode extends Node {
 		List<Node> children;
 
-		public intNode() {
+		public innerNode() {
 			this.keys = new ArrayList<String>();
 			this.children = new ArrayList<Node>();
 		}
 
 		@Override
 		public String getValue(String key) {
+
+			// traversing
+			for (int i = 0; i < children.size(); i++) {
+				for (int j = 0; j < children.get(i).keys.size(); j++) {
+				
+					String s = children.get(i).keys.get(j).toString(); 
+					String k = key.toString();
+					
+					if (s.toLowerCase().contains(k.toLowerCase())) {
+						System.out.println("Found in innerNode " + i + " [" + k + "]: " + j + " / " + s);
+					}
+				}
+			}
+			
+
+
 			return getChild(key).getValue(key);
 		}
+
 
 		@Override
 		public void deleteValue(String key) {
@@ -124,9 +142,9 @@ public class bPlusTree  {
 		public void insertValue(String key, String value) {
 			Node child = getChild(key);
 
-			if (dbimpl.DEBUG_MODE) {
-				if (key.toLowerCase().contains(dbimpl.DEBUG_MODE_STR))
-					System.out.println("[a] Adding key/value in intNode: " + key + "/" + value);
+			if (dbimpl.DEBUG_MODE_SHOW_INSERT) {
+				if (key.toLowerCase().contains(dbimpl.DEBUG_MODE_SEARCH_STR))
+					System.out.println("[a] Adding key/value in innerNode: " + key + "/" + value);
 			}
 
 				
@@ -137,7 +155,7 @@ public class bPlusTree  {
 			}
 			if (root.isOverflow()) {
 				Node sibling = split();
-				intNode newRoot = new intNode();
+				innerNode newRoot = new innerNode();
 				newRoot.keys.add(sibling.getFirstLeafKey());
 				newRoot.children.add(this);
 				newRoot.children.add(sibling);
@@ -154,7 +172,7 @@ public class bPlusTree  {
 		@Override
 		public void merge(Node sibling) {
 			// @SuppressWarnings("unchecked")
-			intNode node = (intNode) sibling;
+			innerNode node = (innerNode) sibling;
 			keys.add(node.getFirstLeafKey());
 			keys.addAll(node.keys);
 			children.addAll(node.children);
@@ -163,11 +181,11 @@ public class bPlusTree  {
 
 		@Override
 		public Node split() {
-			if (dbimpl.DEBUG_MODE)
-				System.out.println("[a] Splitting intNode");
+			if (dbimpl.DEBUG_MODE_SHOW_INSERT)
+				System.out.println("[a] Splitting innerNode");
 			int from = keySize() / 2 + 1;
 			int to = keySize();
-			intNode sibling = new intNode();
+			innerNode sibling = new innerNode();
 			// subList(int fromIndex, int toIndex)
 			sibling.keys.addAll(keys.subList(from, to));
 			sibling.children.addAll(children.subList(from, to + 1));
@@ -241,6 +259,7 @@ public class bPlusTree  {
 			values = new ArrayList<String>();
 		}
 
+
 		@Override
 		public String getValue(String key) {
 
@@ -252,7 +271,7 @@ public class bPlusTree  {
 				
 				if (s.toLowerCase().contains(k.toLowerCase()) 
 						|| v.toLowerCase().contains(k.toLowerCase())) {
-					System.out.println("Found [" + k + "]: " + i + " / " + s + " / " + v);
+					System.out.println("Found in leafNode [" + k + "]: " + i + " / " + s + " / " + v);
 				}
 			}
 
@@ -275,15 +294,15 @@ public class bPlusTree  {
 			int loc = Collections.binarySearch(keys, key);
 			int valueIndex = loc >= 0 ? loc : -loc - 1;
 			if (loc >= 0) {
-				if (dbimpl.DEBUG_MODE) {
-					if (key.toLowerCase().contains(dbimpl.DEBUG_MODE_STR))
+				if (dbimpl.DEBUG_MODE_SHOW_INSERT) {
+					if (key.toLowerCase().contains(dbimpl.DEBUG_MODE_SEARCH_STR))
 						System.out.println("[a] Adding key/value in leafNode: " + valueIndex + " / " + key + "/" + value);
 				}
 		
 				values.set(valueIndex, value);
 			} else {
-				if (dbimpl.DEBUG_MODE) {
-					if (key.toLowerCase().contains(dbimpl.DEBUG_MODE_STR))
+				if (dbimpl.DEBUG_MODE_SHOW_INSERT) {
+					if (key.toLowerCase().contains(dbimpl.DEBUG_MODE_SEARCH_STR))
 						System.out.println("[b] Adding key/value in leafNode: " + valueIndex + " / " + key + "/" + value);
 				}
 					
@@ -291,13 +310,13 @@ public class bPlusTree  {
 				values.add(valueIndex, value);
 			}
 			if (root.isOverflow()) {
-				if (dbimpl.DEBUG_MODE) {
-					if (key.toLowerCase().contains(dbimpl.DEBUG_MODE_STR))
+				if (dbimpl.DEBUG_MODE_SHOW_INSERT) {
+					if (key.toLowerCase().contains(dbimpl.DEBUG_MODE_SEARCH_STR))
 						System.out.println("[c] Overflow in leafNode: " + valueIndex + " / " + key + "/" + value);
 				}
 					
 				Node sibling = split();
-				intNode newRoot = new intNode();
+				innerNode newRoot = new innerNode();
 				newRoot.keys.add(sibling.getFirstLeafKey());
 				newRoot.children.add(this);
 				newRoot.children.add(sibling);
@@ -322,7 +341,7 @@ public class bPlusTree  {
 
 		@Override
 		public Node split() {
-			if (dbimpl.DEBUG_MODE)
+			if (dbimpl.DEBUG_MODE_SHOW_INSERT)
 				System.out.println("[b] Splitting leafNode");
 			leafNode sibling = new leafNode();
 			int from = (keySize() + 1) / 2;
