@@ -21,7 +21,8 @@ public class dbquery implements dbimpl {
 		load.readArguments(args);
 		long endTime = System.currentTimeMillis();
 
-		System.out.println("Query time: " + (endTime - startTime) + "ms");
+		if (args[2].equals("-h"))
+			System.out.println("Heapfile Search Time: " + (endTime - startTime) + "ms");
 		dbimpl.drawLine();
 	}
 
@@ -37,13 +38,14 @@ public class dbquery implements dbimpl {
 			else if (args[2].equals("-b")) {
 
 				// read b+ tree records from disk and re-buidling tree
+				// do not count tree re-building time
 				readBTree(args[0]);
 
 				long queryStartTime = System.currentTimeMillis();
-				System.out.println("Searching Actual B+ Tree for [" + args[0] + "]: ");
-				System.out.println(_bt.search(args[0]));
+				System.out.println("Searching B+ Tree for [" + args[0] + "]: ");
+				_bt.search(args[0]);
 				long queryEndTime = System.currentTimeMillis();
-				System.out.println("Search time: " + (queryEndTime - queryStartTime) + "ms");
+				System.out.println("B+ Tree Search Time: " + (queryEndTime - queryStartTime) + "ms");
 			}
 
 		} else {

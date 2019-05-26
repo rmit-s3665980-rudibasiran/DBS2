@@ -4,22 +4,21 @@ import java.util.Collections;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Queue;
 import java.io.FileOutputStream;
 import java.io.FileNotFoundException;
 
 public class bPlusTree  {
 
-	private int branchingFactor;
+	private int maxKeys;
 	private Node root;
 
 	public bPlusTree() {
-		branchingFactor = dbimpl.DEFAULT_BRANCHING_FACTOR;
+		maxKeys = dbimpl.MAX_NUM_KEYS;
 		root = new leafNode();
 	}
 
-	public String search(String key) {
-		return root.getValue(key);
+	public void search(String key) {
+		root.getValue(key);
 	}
 
 	public void showTree(FileOutputStream fos) {
@@ -30,35 +29,6 @@ public class bPlusTree  {
 		root.insertValue(key, value);
 	}
 
-	public String toString() {
-		Queue<List<Node>> queue = new LinkedList<List<Node>>();
-		queue.add(Arrays.asList(root));
-		StringBuilder sb = new StringBuilder();
-		while (!queue.isEmpty()) {
-			Queue<List<Node>> nextQueue = new LinkedList<List<Node>>();
-			while (!queue.isEmpty()) {
-				List<Node> nodes = queue.remove();
-				sb.append('{');
-				Iterator<Node> it = nodes.iterator();
-				while (it.hasNext()) {
-					Node node = it.next();
-					sb.append(node.toString());
-					if (it.hasNext())
-						sb.append(", ");
-					if (node instanceof bPlusTree.innerNode)
-						nextQueue.add(((innerNode) node).children);
-				}
-				sb.append('}');
-				if (!queue.isEmpty())
-					sb.append(", ");
-				else
-					sb.append('\n');
-			}
-			queue = nextQueue;
-		}
-		return sb.toString();
-	}
-
 	public abstract class Node {
 		List<String> keys;
 
@@ -66,7 +36,7 @@ public class bPlusTree  {
 			return keys.size();
 		}
 
-		abstract String getValue(String key);
+		abstract void getValue(String key);
 
 		abstract void traverse(FileOutputStream fos);
 
@@ -76,17 +46,9 @@ public class bPlusTree  {
 
 		abstract String getFirstLeafKey();
 
-		abstract void merge(Node sibling);
-
 		abstract Node split();
 
 		abstract boolean isOverflow();
-
-		abstract boolean isUnderflow();
-
-		public String toString() {
-			return keys.toString();
-		}
 	}
 
 	public class innerNode extends Node {
@@ -104,8 +66,14 @@ public class bPlusTree  {
 		}
 
 		@Override
-		public String getValue(String key) {
-			return getChild(key).getValue(key);
+		public void getValue(String key) {
+
+			for (int i = 0; i < children.size(); i++) {
+				if (!children.get(i).isVisited()) {
+					children.get(i).getValue(key);
+					visited = true;
+				}
+			}
 		}
 
 		@Override
@@ -115,7 +83,7 @@ public class bPlusTree  {
 				numKeys = 0;
 				for (int j = 0; j < children.get(i).keys.size(); j++) {
 					if (dbimpl.showTreeKeys) {
-						System.out.println("innerNode [" + i + "] key ]" + j + "]:" + children.get(i).keys.get(j).toString());
+						System.out.println("innerNode [" + i + "] key ]" + j + "]:" + children.get(i).keys.get(j));
 					}
 					numKeys = j;
 				}
@@ -137,7 +105,6 @@ public class bPlusTree  {
 				if (key.toLowerCase().contains(dbimpl.DEBUG_MODE_SEARCH_STR))
 					System.out.println("[a] Adding key/value in innerNode: " + key + "/" + value);
 			}
-
 				
 			child.insertValue(key, value);
 			if (child.isOverflow()) {
@@ -160,15 +127,6 @@ public class bPlusTree  {
 		}
 	
 		@Override
-		public void merge(Node sibling) {
-			innerNode node = (innerNode) sibling;
-			keys.add(node.getFirstLeafKey());
-			keys.addAll(node.keys);
-			children.addAll(node.children);
-
-		}
-
-		@Override
 		public Node split() {
 			if (dbimpl.DEBUG_MODE_SHOW_INSERT)
 				System.out.println("[a] Splitting innerNode");
@@ -187,12 +145,7 @@ public class bPlusTree  {
 
 		@Override
 		public boolean isOverflow() {
-			return children.size() > branchingFactor;
-		}
-
-		@Override
-		public boolean isUnderflow() {
-			return children.size() < (branchingFactor + 1) / 2;
+			return children.size() > maxKeys;
 		}
 
 		public Node getChild(String key) {
@@ -255,25 +208,21 @@ public class bPlusTree  {
 		}
 
 		@Override
-		public String getValue(String key) {
+		public void getValue(String key) {
 
 			for (int i = 0; i < keys.size(); i++) {
 				
-				// System.out.println("Keys: " + keys.get(i));
-				String s = keys.get(i).toString(); 
-				String k = key.toString();
-				String v = values.get(i).toString();
+				String s = keys.get(i); 
+				String k = key;
+				String v = values.get(i);
 				
 				if (key != dbimpl.DEFAULT_KEY_STRING) {
 					if (s.toLowerCase().contains(k.toLowerCase()) 
 						|| v.toLowerCase().contains(k.toLowerCase())) {
-						System.out.println("Found in leafNode [" + k + "]: " + s + " ==> " + v);
+						System.out.println("Found in B+ Tree [" + k + "]: " + s + " ==> " + v);
 					}
 				}
 			}
-
-			int loc = Collections.binarySearch(keys, key);
-			return loc >= 0 ? values.get(loc) : null;
 		}
 
 		@Override
@@ -281,8 +230,8 @@ public class bPlusTree  {
 			visited = true;
 			byte[] record = new byte[dbimpl.treeRecordSize];
 			for (int i = 0; i < keys.size(); i++) {
-				String s = keys.get(i).toString(); 
-				String v = values.get(i).toString();
+				String s = keys.get(i); 
+				String v = values.get(i);
 				String out = s + "," + v + ",";
 				record = out.getBytes();
 				try {
@@ -335,14 +284,6 @@ public class bPlusTree  {
 		}
 
 		@Override
-		public void merge(Node sibling) {
-			leafNode node = (leafNode) sibling;
-			keys.addAll(node.keys);
-			values.addAll(node.values);
-			next = node.next;
-		}
-
-		@Override
 		public Node split() {
 			if (dbimpl.DEBUG_MODE_SHOW_INSERT)
 				System.out.println("[b] Splitting leafNode");
@@ -362,12 +303,7 @@ public class bPlusTree  {
 
 		@Override
 		public boolean isOverflow() {
-			return values.size() > branchingFactor - 1;
-		}
-
-		@Override
-		public boolean isUnderflow() {
-			return values.size() < branchingFactor / 2;
+			return values.size() > maxKeys - 1;
 		}
 	}
 }

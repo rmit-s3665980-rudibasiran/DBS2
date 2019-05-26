@@ -124,7 +124,7 @@ public class dbload implements dbimpl {
 		if (DEBUG_CHK_BUILD) {
 			long queryStartTime = System.currentTimeMillis();
 			System.out.println("Searching for [" + DEBUG_MODE_SEARCH_STR + "]: ");
-			System.out.println(_bt.search(DEBUG_MODE_SEARCH_STR));
+			_bt.search(DEBUG_MODE_SEARCH_STR);
 			long queryEndTime = System.currentTimeMillis();
 			System.out.println("Search time: " + (queryEndTime - queryStartTime) + "ms");
 		}
