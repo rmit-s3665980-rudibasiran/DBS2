@@ -11,7 +11,7 @@ public interface dbimpl {
    public static final int RECORD_SIZE = 336;
    public static final int EOF_PAGENUM_SIZE = 4;
    public static final int RID_SIZE = 4;
-
+   
    public static final int DEVICE_ID_SIZE = 6;
    public static final int ARRIVAL_TIME_SIZE = 22;
    public static final int DEPART_TIME_SIZE = 22;
@@ -138,20 +138,18 @@ public interface dbimpl {
 
    public boolean isInteger(String s);
 
+
+   // b+ tree global variables
    public static final String bPlusTreeFileName = "bt.dat";
    public static final Boolean saveTreeToDisk = true;
    public static final String DEFAULT_KEY_STRING = "-";
    public static final Boolean saveTreeToDiskKeys = false;
-   public static final Boolean saveTreeToDiskKeysValues = false;
-
+   public static final Boolean saveTreeToDiskKeysValues = true;
+   public static final int treeRecordSize = DEVICE_ID_SIZE + ARRIVAL_TIME_SIZE;;
    public static final boolean DEBUG_MODE = true;
    public static final boolean DEBUG_MODE_SHOW_INSERT = false;
-   // public static final String DEBUG_MODE_SEARCH_STR = "18741";
    public static final String DEBUG_MODE_SEARCH_STR = "22284";
-   // public static final String DEBUG_MODE_SEARCH_STR = "-";
-   
-   // public static final int DEFAULT_BRANCHING_FACTOR = 16384;
-   public static final int DEFAULT_BRANCHING_FACTOR = 1024;
+   public static final int DEFAULT_BRANCHING_FACTOR = 128;
    public static void drawLine() {
 		for (int x = 0; x < 50; x++)
 			System.out.print("-");

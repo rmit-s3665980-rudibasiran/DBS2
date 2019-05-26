@@ -5,6 +5,8 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Queue;
+import java.io.FileOutputStream;
+import java.io.FileNotFoundException;
 
 public class bPlusTree  {
 
@@ -20,8 +22,8 @@ public class bPlusTree  {
 		return root.getValue(key);
 	}
 
-	public void showTree(String key) {
-		root.traverse(key);
+	public void showTree(FileOutputStream fos) {
+		root.traverse(fos);
 	}
 
 	public void insert(String key, String value) {
@@ -67,7 +69,7 @@ public class bPlusTree  {
 
 		abstract String getValue(String key);
 
-		abstract void traverse(String key);
+		abstract void traverse(FileOutputStream fos);
 
 		abstract boolean isVisited();
 
@@ -108,7 +110,7 @@ public class bPlusTree  {
 		}
 
 		@Override
-		public void traverse (String key) {
+		public void traverse (FileOutputStream fos) {
 			int numKeys = 0;
 			for (int i = 0; i < children.size(); i++) {
 				numKeys = 0;
@@ -122,7 +124,7 @@ public class bPlusTree  {
 			}
 			for (int i = 0; i < children.size(); i++) {
 				if (!children.get(i).isVisited()) {
-					children.get(i).traverse(key);
+					children.get(i).traverse(fos);
 					visited = true;
 				}
 			}
@@ -275,13 +277,26 @@ public class bPlusTree  {
 		}
 
 		@Override
-		public void traverse(String key) {
+		public void traverse(FileOutputStream fos) {
 			visited = true;
+			byte[] record = new byte[dbimpl.treeRecordSize];
+			// String[] key;
 			for (int i = 0; i < keys.size(); i++) {
 				String s = keys.get(i).toString(); 
 				String v = values.get(i).toString();
-				if (dbimpl.saveTreeToDiskKeysValues)
-					System.out.println(s + " ==> " + v);
+				String out = s + ";" + v;
+				record = out.getBytes();
+				if (dbimpl.saveTreeToDiskKeysValues) {
+					try {
+						fos.write(record);
+					}
+					catch (FileNotFoundException e) {
+						System.out.println("File: " + dbimpl.bPlusTreeFileName + " not found.");
+					} catch (Exception e) {
+						e.printStackTrace();
+					}
+				}
+					
 			}
 		}
 

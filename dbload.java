@@ -24,8 +24,6 @@ public class dbload implements dbimpl {
 		long endTime = System.currentTimeMillis();
 
 		System.out.println("Load time: " + (endTime - startTime) + "ms");
-	
-			
 	}
 
 	// reading command line arguments
@@ -64,6 +62,8 @@ public class dbload implements dbimpl {
 		byte[] RECORD = new byte[RECORD_SIZE];
 		int outCount, pageCount, recCount;
 		outCount = pageCount = recCount = 0;
+
+	
 
 		try {
 			// create stream to write bytes to according page size
@@ -116,8 +116,6 @@ public class dbload implements dbimpl {
 		System.out.println("Page total: " + pageCount);
 		System.out.println("Record total: " + recCount);
 
-	
-
 		if (saveTreeToDisk)
 			doSaveTreeToDisk();
 
@@ -126,9 +124,6 @@ public class dbload implements dbimpl {
 		System.out.println(_bt.search(DEBUG_MODE_SEARCH_STR));
 		long queryEndTime = System.currentTimeMillis();
 		System.out.println("Search time: " + (queryEndTime - queryStartTime) + "ms");
-
-
-
 	}
 
 	// create byte array for a field and append to record array at correct
@@ -183,6 +178,19 @@ public class dbload implements dbimpl {
 	}
 
 	public void doSaveTreeToDisk() {
-		_bt.showTree(DEFAULT_KEY_STRING);
+		
+		FileOutputStream fosTree = null;
+
+		try {
+			fosTree = new FileOutputStream(bPlusTreeFileName);
+			_bt.showTree(fosTree);
+			fosTree.close();
+		} catch (FileNotFoundException e) {
+			System.out.println("File: " + bPlusTreeFileName + " not found.");
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+
+		
 	}
 }
