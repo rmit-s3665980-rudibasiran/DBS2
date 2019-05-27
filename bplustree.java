@@ -7,7 +7,6 @@ import java.util.List;
 import java.io.FileOutputStream;
 import java.io.FileNotFoundException;
 
-
 public class bplustree  {
 
 	private int maxKeys;
@@ -19,15 +18,15 @@ public class bplustree  {
 	}
 
 	public void search(String key) {
-		root.getValue(key);
+		root.search(key);
 	}
 
-	public void showTree(FileOutputStream fos) {
+	public void traverse(FileOutputStream fos) {
 		root.traverse(fos);
 	}
 
 	public void insert(String key, String value) {
-		root.insertValue(key, value);
+		root.insert(key, value);
 	}
 
 	public abstract class Node {
@@ -37,13 +36,13 @@ public class bplustree  {
 			return keys.size();
 		}
 
-		abstract void getValue(String key);
+		abstract void search(String key);
 
 		abstract void traverse(FileOutputStream fos);
 
 		abstract boolean isVisited();
 
-		abstract void insertValue(String key, String value);
+		abstract void insert(String key, String value);
 
 		abstract String getFirstLeafKey();
 
@@ -67,11 +66,10 @@ public class bplustree  {
 		}
 
 		@Override
-		public void getValue(String key) {
-
+		public void search(String key) {
 			for (int i = 0; i < children.size(); i++) {
 				if (!children.get(i).isVisited()) {
-					children.get(i).getValue(key);
+					children.get(i).search(key);
 					visited = true;
 				}
 			}
@@ -99,15 +97,14 @@ public class bplustree  {
 		}
 
 		@Override
-		public void insertValue(String key, String value) {
+		public void insert(String key, String value) {
 			Node child = getChild(key);
 
 			if (dbimpl.DEBUG_MODE_SHOW_INSERT) {
-				if (key.toLowerCase().contains(dbimpl.DEBUG_MODE_SEARCH_STR))
+				// if (key.toLowerCase().contains(dbimpl.DEBUG_MODE_SEARCH_STR))
 					System.out.println("[a] Adding key/value in innerNode: " + key + "/" + value);
 			}
-				
-			child.insertValue(key, value);
+			child.insert(key, value);
 			if (child.isOverflow()) {
 				Node sibling = child.split();
 				insertChild(sibling.getFirstLeafKey(), sibling);
@@ -152,15 +149,12 @@ public class bplustree  {
 		public Node getChild(String key) {
 			int loc = Collections.binarySearch(keys, key);
 			int childIndex = loc >= 0 ? loc + 1 : -loc - 1;
-			return children.get(childIndex);
-		}
-
-		public void deleteChild(String key) {
-			int loc = Collections.binarySearch(keys, key);
-			if (loc >= 0) {
-				keys.remove(loc);
-				children.remove(loc + 1);
+			if (dbimpl.DEBUG_MODE_SHOW_INSERT) {
+				System.out.println("key [" + key + "] keys.size() [" 
+					+ children.get(childIndex).keySize() 
+					+ "] loc [" + loc + "] childIndex [" + childIndex + "]");
 			}
+			return children.get(childIndex);
 		}
 
 		public void insertChild(String key, Node child) {
@@ -209,7 +203,7 @@ public class bplustree  {
 		}
 
 		@Override
-		public void getValue(String key) {
+		public void search(String key) {
 
 			for (int i = 0; i < keys.size(); i++) {
 				
@@ -217,11 +211,9 @@ public class bplustree  {
 				String k = key;
 				String v = values.get(i);
 				
-				if (key != dbimpl.DEFAULT_KEY_STRING) {
-					if (s.toLowerCase().contains(k.toLowerCase()) 
-						|| v.toLowerCase().contains(k.toLowerCase())) {
-						System.out.println("Found in B+ Tree [" + k + "]: " + s + " ==> " + v);
-					}
+				if (s.toLowerCase().contains(k.toLowerCase()) 
+					|| v.toLowerCase().contains(k.toLowerCase())) {
+					System.out.println("Found in B+ Tree [" + k + "]: " + s + " ==> " + v);
 				}
 			}
 		}
@@ -247,28 +239,28 @@ public class bplustree  {
 		}
 
 		@Override
-		public void insertValue(String key, String value) {
+		public void insert(String key, String value) {
 			
 			int loc = Collections.binarySearch(keys, key);
 			int valueIndex = loc >= 0 ? loc : -loc - 1;
 			if (loc >= 0) {
 				if (dbimpl.DEBUG_MODE_SHOW_INSERT) {
-					if (key.toLowerCase().contains(dbimpl.DEBUG_MODE_SEARCH_STR))
-						System.out.println("[a] Adding key/value in leafNode: " + valueIndex + " / " + key + "/" + value);
+					// if (key.toLowerCase().contains(dbimpl.DEBUG_MODE_SEARCH_STR))
+						System.out.println("[a] Adding key/value in leafNode: valueIndex = " + valueIndex + " / " + key + "/" + value);
 				}
 				values.set(valueIndex, value);
 			} else {
 				if (dbimpl.DEBUG_MODE_SHOW_INSERT) {
-					if (key.toLowerCase().contains(dbimpl.DEBUG_MODE_SEARCH_STR))
-						System.out.println("[b] Adding key/value in leafNode: " + valueIndex + " / " + key + "/" + value);
+					// if (key.toLowerCase().contains(dbimpl.DEBUG_MODE_SEARCH_STR))
+						System.out.println("[b] Adding key/value in leafNode: valueIndex = " + valueIndex + " / " + key + "/" + value);
 				}
 				keys.add(valueIndex, key);
 				values.add(valueIndex, value);
 			}
 			if (root.isOverflow()) {
 				if (dbimpl.DEBUG_MODE_SHOW_INSERT) {
-					if (key.toLowerCase().contains(dbimpl.DEBUG_MODE_SEARCH_STR))
-						System.out.println("[c] Overflow in leafNode: " + valueIndex + " / " + key + "/" + value);
+					// if (key.toLowerCase().contains(dbimpl.DEBUG_MODE_SEARCH_STR))
+						System.out.println("[c] Overflow in leafNode: valueIndex = " + valueIndex + " / " + key + "/" + value);
 				}
 				Node sibling = split();
 				innerNode newRoot = new innerNode();

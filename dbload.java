@@ -187,7 +187,7 @@ public class dbload implements dbimpl {
 
 		try {
 			fosTree = new FileOutputStream(BPLUS_TREE_FILE_NAME);
-			_bt.showTree(fosTree);
+			_bt.traverse(fosTree);
 			fosTree.close();
 		} catch (FileNotFoundException e) {
 			System.out.println("File: " + BPLUS_TREE_FILE_NAME + " not found.");

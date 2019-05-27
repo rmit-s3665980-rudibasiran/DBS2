@@ -142,15 +142,14 @@ public interface dbimpl {
    // b+ tree global variables
    public static final String BPLUS_TREE_FILE_NAME = "bt.dat";
    public static final Boolean SAVE_TREE_TO_DISK = true;
-   public static final String DEFAULT_KEY_STRING = "-";
    public static final Boolean SHOW_TREE_KEYS = false;
    public static final int TREE_RECORD_SIZE = DEVICE_ID_SIZE + ARRIVAL_TIME_SIZE + STREET_NAME_SIZE + 2;
    public static final boolean DEBUG_MODE = true;
    public static final boolean DEBUG_CHK_BUILD = false;
-   public static final boolean SEARCH_ACTUAL_BTREE = true;
-   public static final boolean DEBUG_MODE_SHOW_INSERT = false;
+   // public static final boolean SEARCH_ACTUAL_BTREE = true;
+   public static final boolean DEBUG_MODE_SHOW_INSERT = true;
    public static final String DEBUG_MODE_SEARCH_STR = "22284";
-   public static final int MAX_NUM_KEYS = 1024;
+   public static final int MAX_NUM_KEYS = 128;
    public static void drawLine() {
 		for (int x = 0; x < 50; x++)
 			System.out.print("-");
