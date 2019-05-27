@@ -75,7 +75,7 @@ public class dbquery implements dbimpl {
 			fis.close();
 		}
 		 catch (FileNotFoundException e) {
-			System.out.println("File: " + btreeFilename + " not found.");
+			System.out.println("File " + btreeFilename + " not found.");
 		} catch (IOException e) {
 			e.printStackTrace();
 		}

@@ -204,13 +204,10 @@ public class bplustree  {
 
 		@Override
 		public void search(String key) {
-
 			for (int i = 0; i < keys.size(); i++) {
-				
 				String s = keys.get(i); 
 				String k = key;
 				String v = values.get(i);
-				
 				if (s.toLowerCase().contains(k.toLowerCase()) 
 					|| v.toLowerCase().contains(k.toLowerCase())) {
 					System.out.println("Found in B+ Tree [" + k + "]: " + s + " ==> " + v);
@@ -231,7 +228,7 @@ public class bplustree  {
 					fos.write(record);
 				}
 				catch (FileNotFoundException e) {
-					System.out.println("File: " + dbimpl.BPLUS_TREE_FILE_NAME + " not found.");
+					System.out.println("File " + dbimpl.BPLUS_TREE_FILE_NAME + " not found.");
 				} catch (Exception e) {
 					e.printStackTrace();
 				}
@@ -246,13 +243,13 @@ public class bplustree  {
 			if (loc >= 0) {
 				if (dbimpl.DEBUG_MODE_SHOW_INSERT) {
 					// if (key.toLowerCase().contains(dbimpl.DEBUG_MODE_SEARCH_STR))
-						System.out.println("[a] Adding key/value in leafNode: valueIndex = " + valueIndex + " / " + key + "/" + value);
+						System.out.println("[a] Adding key/value in leafNode: values.size() = " + values.size() + " / " + key + "/" + value);
 				}
 				values.set(valueIndex, value);
 			} else {
 				if (dbimpl.DEBUG_MODE_SHOW_INSERT) {
 					// if (key.toLowerCase().contains(dbimpl.DEBUG_MODE_SEARCH_STR))
-						System.out.println("[b] Adding key/value in leafNode: valueIndex = " + valueIndex + " / " + key + "/" + value);
+						System.out.println("[b] Adding key/value in leafNode: values.size() = " + values.size() + " / " + key + "/" + value);
 				}
 				keys.add(valueIndex, key);
 				values.add(valueIndex, value);
@@ -260,7 +257,7 @@ public class bplustree  {
 			if (root.isOverflow()) {
 				if (dbimpl.DEBUG_MODE_SHOW_INSERT) {
 					// if (key.toLowerCase().contains(dbimpl.DEBUG_MODE_SEARCH_STR))
-						System.out.println("[c] Overflow in leafNode: valueIndex = " + valueIndex + " / " + key + "/" + value);
+						System.out.println("[c] Overflow in leafNode: values.size() = " + values.size() + " / " + key + "/" + value);
 				}
 				Node sibling = split();
 				innerNode newRoot = new innerNode();
