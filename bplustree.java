@@ -17,6 +17,10 @@ public class bplustree  {
 		root = new leafNode();
 	}
 
+	public void rangeSearch(String k1, String k2, int searchType) {
+		root.rangeSearch(k1, k2, searchType);
+	}
+
 	public void search(String key) {
 		root.search(key);
 	}
@@ -40,6 +44,8 @@ public class bplustree  {
 
 		abstract void traverse(FileOutputStream fos);
 
+		abstract void rangeSearch(String k1, String k2, int searchType);
+
 		abstract boolean isVisited();
 
 		abstract void insert(String key, String value);
@@ -54,7 +60,7 @@ public class bplustree  {
 	public class innerNode extends Node {
 		List<Node> children;
 		Boolean visited = false;
-
+	
 		public innerNode() {
 			this.keys = new ArrayList<String>();
 			this.children = new ArrayList<Node>();
@@ -63,6 +69,16 @@ public class bplustree  {
 		@Override
 		public boolean isVisited() {
 			return visited;
+		}
+
+		@Override
+		public void rangeSearch(String k1, String k2, int searchType) {
+			for (int i = 0; i < children.size(); i++) {
+				if (!children.get(i).isVisited()) {
+					children.get(i).rangeSearch(k1, k2, searchType);
+					visited = true;
+				}
+			}
 		}
 
 		@Override
@@ -77,23 +93,27 @@ public class bplustree  {
 
 		@Override
 		public void traverse (FileOutputStream fos) {
-			int numKeys = 0;
-			for (int i = 0; i < children.size(); i++) {
-				numKeys = 0;
-				for (int j = 0; j < children.get(i).keys.size(); j++) {
-					if (dbimpl.SHOW_TREE_KEYS) {
-						System.out.println("innerNode [" + i + "] key ]" + j + "]:" + children.get(i).keys.get(j));
+			if (dbimpl.SHOW_TREE_KEYS) {
+				int numKeys = 0;
+				for (int i = 0; i < children.size(); i++) {
+					numKeys = 0;
+					for (int j = 0; j < children.get(i).keys.size(); j++) {
+						if (dbimpl.SHOW_TREE_KEYS) {
+							System.out.println("innerNode [" + i + "] key ]" + j + "]:" + children.get(i).keys.get(j));
+						}
+						numKeys = j;
 					}
-					numKeys = j;
-				}
-				System.out.println("innerNode [" + i + "] number of keys [" + numKeys + "]");
-			}
-			for (int i = 0; i < children.size(); i++) {
-				if (!children.get(i).isVisited()) {
-					children.get(i).traverse(fos);
-					visited = true;
+					System.out.println("innerNode [" + i + "] number of keys [" + numKeys + "]");
 				}
 			}
+			else {
+				for (int i = 0; i < children.size(); i++) {
+					if (!children.get(i).isVisited()) {
+						children.get(i).traverse(fos);
+						visited = true;
+					}
+				}
+			}	
 		}
 
 		@Override
@@ -204,14 +224,40 @@ public class bplustree  {
 
 		@Override
 		public void search(String key) {
+			visited = true;
 			for (int i = 0; i < keys.size(); i++) {
 				String s = keys.get(i); 
-				String k = key;
 				String v = values.get(i);
+				String k = key;
 				if (s.toLowerCase().contains(k.toLowerCase()) 
 					|| v.toLowerCase().contains(k.toLowerCase())) {
-					System.out.println("Found in B+ Tree [" + k + "]: " + s + " ==> " + v);
+					System.out.println("Found in B+ Tree [" + k + "]: " + s + " - " + v);
 				}
+			}
+		}
+
+		@Override
+		public void rangeSearch(String k1, String k2, int searchType) {
+			visited = true;
+			for (int i = 0; i < keys.size(); i++) {
+				String s = keys.get(i); 
+				String v = values.get(i);
+				String str = "";
+				if (searchType == dbimpl.RANGE_KEY_DEVICE) {
+					str = s.substring(0, dbimpl.DEVICE_ID_SIZE);
+				}
+				else if (searchType == dbimpl.RANGE_KEY_DATE) {
+					str = s.substring(dbimpl.DEVICE_ID_SIZE, dbimpl.DEVICE_ID_SIZE + 10);
+				}
+				if (str.compareTo(k1) >= 0 && str.compareTo(k2) <= 0) {
+					System.out.println("Found in B+ Tree Range [" + k1 + "] " + dbimpl.RANGE_DELIMITER + " [" 
+						+ k2 + "]: " + s + " - " + v);
+				}
+				if (str.contains(k2)) {
+					System.out.println("Found in B+ Tree Range [" + k1 + "] " + dbimpl.RANGE_DELIMITER + " [" 
+						+ k2 + "]: " + s + " - " + v);
+				}
+				
 			}
 		}
 

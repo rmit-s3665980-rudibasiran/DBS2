@@ -146,10 +146,12 @@ public interface dbimpl {
    public static final int TREE_RECORD_SIZE = DEVICE_ID_SIZE + ARRIVAL_TIME_SIZE + STREET_NAME_SIZE + 2;
    public static final boolean DEBUG_MODE = true;
    public static final boolean DEBUG_CHK_BUILD = false;
-   // public static final boolean SEARCH_ACTUAL_BTREE = true;
    public static final boolean DEBUG_MODE_SHOW_INSERT = false;
    public static final String DEBUG_MODE_SEARCH_STR = "22284";
    public static final int MAX_NUM_KEYS = 1024;
+   public static final String RANGE_DELIMITER = "---"; 
+   public static final int RANGE_KEY_DEVICE = 1;
+   public static final int RANGE_KEY_DATE = 2;
    public static void drawLine() {
 		for (int x = 0; x < 50; x++)
 			System.out.print("-");

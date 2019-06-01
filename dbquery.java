@@ -17,7 +17,7 @@ public class dbquery implements dbimpl {
 		// calculate query time
 		long startTime = System.currentTimeMillis();
 
-		// java dbquery searchtext heapsize flag [-b or -h]
+		// java dbquery searchtext heapsize flag [-b, -h]
 		load.readArguments(args);
 		long endTime = System.currentTimeMillis();
 
@@ -35,15 +35,41 @@ public class dbquery implements dbimpl {
 					readHeap(args[0], Integer.parseInt(args[1]));
 				}
 			}
-			else if (args[2].equals("-b")) {
+			else if (args[2].contains("-b")) {
 
 				// read b+ tree records from disk and re-buidling tree
 				// do not count tree re-building time
-				readBTree(args[0]);
+				readBTree();
 
 				long queryStartTime = System.currentTimeMillis();
 				System.out.println("Searching B+ Tree for [" + args[0] + "]: ");
-				_bt.search(args[0]);
+
+				Boolean doRangeSearch = false;
+				String k1 = "";
+				String k2 = "";
+				String key = args[0];
+				if (key.contains(dbimpl.RANGE_DELIMITER)) {
+					String[] searchValues = key.split(dbimpl.RANGE_DELIMITER);
+					k1 = searchValues[0];
+					k2 = searchValues[1];
+					doRangeSearch = true;
+				}
+				else {
+					k1 = key;
+				}
+
+				if (doRangeSearch) {
+					if (args[2].equals("-bdevice")) {
+						_bt.rangeSearch(k1, k2, RANGE_KEY_DEVICE);
+					}
+					else if (args[2].equals("-bdate")) {
+						_bt.rangeSearch(k1, k2, RANGE_KEY_DATE);
+					}
+				}
+				else {
+					_bt.search(key);
+				}
+			
 				long queryEndTime = System.currentTimeMillis();
 				System.out.println("B+ Tree Search Time: " + (queryEndTime - queryStartTime) + "ms");
 			}
@@ -53,8 +79,9 @@ public class dbquery implements dbimpl {
 		}
 	}
 
-	public void readBTree (String searchValue) {
+	public void readBTree () {
 		File btreeFilename = new File(BPLUS_TREE_FILE_NAME);
+		int count = 0;
 		try (FileInputStream fis = new FileInputStream(btreeFilename)) {
 			boolean haveNextRecord = true;
 		
@@ -63,6 +90,8 @@ public class dbquery implements dbimpl {
 				int i = fis.read(buf, 0, TREE_RECORD_SIZE);
 				String rec = new String(buf);
 				if (i != -1) {
+					count++;
+					// System.out.println(count + ": " + rec);
 					String key = rec.split("[,]")[0];
 					String val = rec.split("[,]")[1];
 
