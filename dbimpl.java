@@ -1,6 +1,17 @@
 /**
- *  Database Systems - HEAP IMPLEMENTATION
+ * Database Systems - HEAP IMPLEMENTATION
+ * Title: RMIT Database Systems Assignment 2
+ * Developer(s): 
+ * - Rudi Basiran <s3665980@student.rmit.edu.au> 
+ * Date Created: 20 May 2019 
+ * Description: dbimpl Class
+ * Notes: 
+ * -
+ * Change History:
+ * - Original version by Luke Gallagher <luke.gallagher@rmit.edu.au>
+ * - Added supporting static values for implementation of B+ Tree
  */
+
 
 public interface dbimpl {
 
@@ -138,20 +149,20 @@ public interface dbimpl {
 
    public boolean isInteger(String s);
 
+   // b+ tree global variables / methods
+   public static final String    BPLUS_TREE_FILE_NAME = "bt.dat";
+   public static final Boolean   SAVE_TREE_TO_DISK = true;
+   public static final Boolean   SHOW_TREE_KEYS = false;
+   public static final int       TREE_RECORD_SIZE = DEVICE_ID_SIZE + ARRIVAL_TIME_SIZE + STREET_NAME_SIZE + 2;
+   public static final boolean   DEBUG_MODE = true;
+   public static final boolean   DEBUG_CHK_BUILD = false;
+   public static final boolean   DEBUG_MODE_SHOW_INSERT = false;
+   public static final String    DEBUG_MODE_SEARCH_STR = "22284";
+   public static final int       MAX_NUM_KEYS = 1024;
+   public static final String    RANGE_DELIMITER = "---"; 
+   public static final int       RANGE_KEY_DEVICE = 1;
+   public static final int       RANGE_KEY_DATE = 2;
 
-   // b+ tree global variables
-   public static final String BPLUS_TREE_FILE_NAME = "bt.dat";
-   public static final Boolean SAVE_TREE_TO_DISK = true;
-   public static final Boolean SHOW_TREE_KEYS = false;
-   public static final int TREE_RECORD_SIZE = DEVICE_ID_SIZE + ARRIVAL_TIME_SIZE + STREET_NAME_SIZE + 2;
-   public static final boolean DEBUG_MODE = true;
-   public static final boolean DEBUG_CHK_BUILD = false;
-   public static final boolean DEBUG_MODE_SHOW_INSERT = false;
-   public static final String DEBUG_MODE_SEARCH_STR = "22284";
-   public static final int MAX_NUM_KEYS = 1024;
-   public static final String RANGE_DELIMITER = "---"; 
-   public static final int RANGE_KEY_DEVICE = 1;
-   public static final int RANGE_KEY_DATE = 2;
    public static void drawLine() {
 		for (int x = 0; x < 50; x++)
 			System.out.print("-");

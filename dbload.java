@@ -9,9 +9,21 @@ import java.nio.ByteBuffer;
 
 /**
  * Database Systems - HEAP IMPLEMENTATION
+ * Title: RMIT Database Systems Assignment 2
+ * Developer(s): 
+ * - Rudi Basiran <s3665980@student.rmit.edu.au> 
+ * Date Created: 20 May 2019 
+ * Description: dbload Class
+ * Notes: 
+ * -
+ * Change History:
+ * - Original version by Luke Gallagher <luke.gallagher@rmit.edu.au>
+ * - Added supporting methods for implementation of B+ Tree
  */
 
+
 public class dbload implements dbimpl {
+
 	private bplustree _bt = new bplustree();
 	// initialize
 
@@ -80,6 +92,7 @@ public class dbload implements dbimpl {
 				String DA_NAME = recordStr.substring(RID_SIZE, RID_SIZE + DEVICE_ID_SIZE + ARRIVAL_TIME_SIZE);
 				String ST_NAME = recordStr.substring(STREET_NAME_OFFSET, STREET_NAME_OFFSET + STREET_NAME_SIZE);
 
+				// insert key + value into b+ tree
 				_bt.insert(DA_NAME, ST_NAME);
 				// _bt.insert(DA_NAME, Integer.toString(pageCount));
 
@@ -117,6 +130,7 @@ public class dbload implements dbimpl {
 		System.out.println("Page total: " + pageCount);
 		System.out.println("Record total: " + recCount);
 
+		// save b+ tree to disk
 		if (SAVE_TREE_TO_DISK)
 			doSaveTreeToDisk();
 
@@ -181,6 +195,7 @@ public class dbload implements dbimpl {
 		return bBuffer.array();
 	}
 
+	// write b+tree to disk by traversing leaf to leaf
 	public void doSaveTreeToDisk() {
 		
 		FileOutputStream fosTree = null;

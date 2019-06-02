@@ -5,8 +5,19 @@ import java.io.IOException;
 import java.nio.ByteBuffer;
 
 /**
- * Database Systems - HEAP IMPLEMENTATION
+ *  Database Systems - HEAP IMPLEMENTATION
+ * Title: RMIT Database Systems Assignment 2
+ * Developer(s): 
+ * - Rudi Basiran <s3665980@student.rmit.edu.au> 
+ * Date Created: 20 May 2019 
+ * Description: dbquery Class
+ * Notes: 
+ * -
+ * Change History:
+ * - Original version by Luke Gallagher <luke.gallagher@rmit.edu.au>
+ * - Added supporting methods implementation of B+ Tree
  */
+
 
 public class dbquery implements dbimpl {
 	private bplustree _bt = new bplustree();
@@ -35,6 +46,7 @@ public class dbquery implements dbimpl {
 					readHeap(args[0], Integer.parseInt(args[1]));
 				}
 			}
+			// check for -b, -bdevice, -bdate
 			else if (args[2].contains("-b")) {
 
 				// read b+ tree records from disk and re-buidling tree
@@ -44,6 +56,7 @@ public class dbquery implements dbimpl {
 				long queryStartTime = System.currentTimeMillis();
 				System.out.println("Searching B+ Tree for [" + args[0] + "]: ");
 
+				// check whether range is specified using RANGE_DELIMITER
 				Boolean doRangeSearch = false;
 				String k1 = "";
 				String k2 = "";
@@ -75,7 +88,7 @@ public class dbquery implements dbimpl {
 			}
 
 		} else {
-			System.out.println("Error: Pass in 3 arguments: dbquery searchtext heapfile flag[-b/-h]");
+			System.out.println("Error: Pass in 3 arguments: dbquery searchtext heapfile flag[-b/-ddate/-bdevice/-h]");
 		}
 	}
 

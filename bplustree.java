@@ -7,26 +7,41 @@ import java.util.List;
 import java.io.FileOutputStream;
 import java.io.FileNotFoundException;
 
+/**
+ * Database Systems - HEAP IMPLEMENTATION
+ * Developer(s): 
+ * - Rudi Basiran <s3665980@student.rmit.edu.au> 
+ * Date Created: 20 May 2019 
+ * Description: bplustree Class
+ * Notes: 
+ * -
+ * Change History:
+ */
+
+
 public class bplustree  {
 
 	private int maxKeys;
 	private Node root;
 
 	public bplustree() {
-		maxKeys = dbimpl.MAX_NUM_KEYS;
+		maxKeys = dbimpl.MAX_NUM_KEYS; // set maximum number of keys per node
 		root = new leafNode();
 	}
 
-	public void rangeSearch(String k1, String k2, int searchType) {
-		root.rangeSearch(k1, k2, searchType);
-	}
-
+	// search for key or part of key
 	public void search(String key) {
 		root.search(key);
 	}
 
+	// travers whole tree
 	public void traverse(FileOutputStream fos) {
 		root.traverse(fos);
+	}
+
+	// range search for device id or date
+	public void rangeSearch(String k1, String k2, int searchType) {
+		root.rangeSearch(k1, k2, searchType);
 	}
 
 	public void insert(String key, String value) {
@@ -34,7 +49,7 @@ public class bplustree  {
 	}
 
 	public abstract class Node {
-		List<String> keys;
+		List<String> keys; // list of keys
 
 		int keySize() {
 			return keys.size();
@@ -46,15 +61,15 @@ public class bplustree  {
 
 		abstract void rangeSearch(String k1, String k2, int searchType);
 
-		abstract boolean isVisited();
+		abstract boolean isVisited(); // to check if node has been visited so that to eradicate double visitation
 
 		abstract void insert(String key, String value);
 
 		abstract String getFirstLeafKey();
 
-		abstract Node split();
+		abstract Node split(); // split function to push up middle key
 
-		abstract boolean isOverflow();
+		abstract boolean isOverflow(); // check if after insertion of new key, it hits > max keys allowed
 	}
 
 	public class innerNode extends Node {
@@ -72,16 +87,6 @@ public class bplustree  {
 		}
 
 		@Override
-		public void rangeSearch(String k1, String k2, int searchType) {
-			for (int i = 0; i < children.size(); i++) {
-				if (!children.get(i).isVisited()) {
-					children.get(i).rangeSearch(k1, k2, searchType);
-					visited = true;
-				}
-			}
-		}
-
-		@Override
 		public void search(String key) {
 			for (int i = 0; i < children.size(); i++) {
 				if (!children.get(i).isVisited()) {
@@ -93,20 +98,20 @@ public class bplustree  {
 
 		@Override
 		public void traverse (FileOutputStream fos) {
+			// for debugging
 			if (dbimpl.SHOW_TREE_KEYS) {
 				int numKeys = 0;
 				for (int i = 0; i < children.size(); i++) {
 					numKeys = 0;
 					for (int j = 0; j < children.get(i).keys.size(); j++) {
-						if (dbimpl.SHOW_TREE_KEYS) {
-							System.out.println("innerNode [" + i + "] key ]" + j + "]:" + children.get(i).keys.get(j));
-						}
+						System.out.println("innerNode [" + i + "] key ]" + j + "]:" + children.get(i).keys.get(j));
 						numKeys = j;
 					}
 					System.out.println("innerNode [" + i + "] number of keys [" + numKeys + "]");
 				}
 			}
 			else {
+				// iterate through each child node
 				for (int i = 0; i < children.size(); i++) {
 					if (!children.get(i).isVisited()) {
 						children.get(i).traverse(fos);
@@ -114,6 +119,18 @@ public class bplustree  {
 					}
 				}
 			}	
+		}
+
+		@Override
+		public void rangeSearch(String k1, String k2, int searchType) {
+			// similar to travers but with key 1 and 2 passed in as well as to 
+			// search on what type of key from DA_NAME (either device or date)
+			for (int i = 0; i < children.size(); i++) {
+				if (!children.get(i).isVisited()) {
+					children.get(i).rangeSearch(k1, k2, searchType);
+					visited = true;
+				}
+			}
 		}
 
 		@Override
@@ -151,10 +168,11 @@ public class bplustree  {
 			int from = keySize() / 2 + 1;
 			int to = keySize();
 			innerNode sibling = new innerNode();
-			// subList(int fromIndex, int toIndex)
+			// copy keys to new innerNode
 			sibling.keys.addAll(keys.subList(from, to));
 			sibling.children.addAll(children.subList(from, to + 1));
 
+			// clear list
 			keys.subList(from - 1, to).clear();
 			children.subList(from, to + 1).clear();
 
@@ -257,7 +275,6 @@ public class bplustree  {
 					System.out.println("Found in B+ Tree Range [" + k1 + "] " + dbimpl.RANGE_DELIMITER + " [" 
 						+ k2 + "]: " + s + " - " + v);
 				}
-				
 			}
 		}
 
