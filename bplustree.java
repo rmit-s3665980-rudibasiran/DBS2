@@ -55,19 +55,19 @@ public class bplustree  {
 			return keys.size();
 		}
 
-		abstract void search(String key);
+		abstract void search(String key); // search for key or part of key
 
-		abstract void traverse(FileOutputStream fos);
+		abstract void traverse(FileOutputStream fos); // traverse whole tree
 
-		abstract void rangeSearch(String k1, String k2, int searchType);
+		abstract void rangeSearch(String k1, String k2, int searchType); // range search with keys1, keys2 and key type
 
 		abstract boolean isVisited(); // to check if node has been visited so that to eradicate double visitation
 
-		abstract void insert(String key, String value);
+		abstract void insert(String key, String value); // insert key + value
 
-		abstract String getFirstLeafKey();
+		abstract String getFirstLeafKey(); // get first left key
 
-		abstract Node split(); // split function to push up middle key
+		abstract Node split(); // split function to push up middle node
 
 		abstract boolean isOverflow(); // check if after insertion of new key, it hits > max keys allowed
 	}
@@ -88,6 +88,7 @@ public class bplustree  {
 
 		@Override
 		public void search(String key) {
+			// go through node + child to search for key or part of key
 			for (int i = 0; i < children.size(); i++) {
 				if (!children.get(i).isVisited()) {
 					children.get(i).search(key);
@@ -111,7 +112,7 @@ public class bplustree  {
 				}
 			}
 			else {
-				// iterate through each child node
+				// iterate through each child node to print to file key and value
 				for (int i = 0; i < children.size(); i++) {
 					if (!children.get(i).isVisited()) {
 						children.get(i).traverse(fos);
@@ -123,8 +124,8 @@ public class bplustree  {
 
 		@Override
 		public void rangeSearch(String k1, String k2, int searchType) {
-			// similar to travers but with key 1 and 2 passed in as well as to 
-			// search on what type of key from DA_NAME (either device or date)
+			// similar to traverse but with key 1 and 2 passed in as well as to 
+			// search on what type of key from DA_NAME (either device id or date)
 			for (int i = 0; i < children.size(); i++) {
 				if (!children.get(i).isVisited()) {
 					children.get(i).rangeSearch(k1, k2, searchType);
@@ -141,11 +142,14 @@ public class bplustree  {
 				// if (key.toLowerCase().contains(dbimpl.DEBUG_MODE_SEARCH_STR))
 					System.out.println("[a] Adding key/value in innerNode: " + key + "/" + value);
 			}
-			child.insert(key, value);
+			child.insert(key, value); // insert key and value into location where sorted keys are
+
+			// if child overflow, split child and set returned sibling as child
 			if (child.isOverflow()) {
 				Node sibling = child.split();
 				insertChild(sibling.getFirstLeafKey(), sibling);
 			}
+			// if root overflow, create new root
 			if (root.isOverflow()) {
 				Node sibling = split();
 				innerNode newRoot = new innerNode();
@@ -168,7 +172,7 @@ public class bplustree  {
 			int from = keySize() / 2 + 1;
 			int to = keySize();
 			innerNode sibling = new innerNode();
-			// copy keys to new innerNode
+			// copy keys and values to new innerNode
 			sibling.keys.addAll(keys.subList(from, to));
 			sibling.children.addAll(children.subList(from, to + 1));
 
@@ -185,6 +189,11 @@ public class bplustree  {
 		}
 
 		public Node getChild(String key) {
+			// try to find key using binarySearch
+			// if key already present, return positive number (location)
+			// if not present, check possible insert position (-negative location)
+			// return node at location
+
 			int loc = Collections.binarySearch(keys, key);
 			int childIndex = loc >= 0 ? loc + 1 : -loc - 1;
 			if (dbimpl.DEBUG_MODE_SHOW_INSERT) {
@@ -196,17 +205,30 @@ public class bplustree  {
 		}
 
 		public void insertChild(String key, Node child) {
+			// try to find key using binarySearch
+			// if key already present, return positive number (location)
+			// if not present, check possible insert position (-negative location)
 			int loc = Collections.binarySearch(keys, key);
 			int childIndex = loc >= 0 ? loc + 1 : -loc - 1;
+
+			// if key position is not empty, set
 			if (loc >= 0) {
 				children.set(childIndex, child);
-			} else {
+			} 
+			// if key position is empty, add keys
+			else {
 				keys.add(childIndex, key);
 				children.add(childIndex + 1, child);
 			}
 		}
 
 		public Node getChildLeftSibling(String key) {
+
+			// try to find key using binarySearch
+			// if key already present, return positive number (location)
+			// if not present, check possible insert position (-negative location)
+			// return node if not empty, else null
+
 			int loc = Collections.binarySearch(keys, key);
 			int childIndex = loc >= 0 ? loc + 1 : -loc - 1;
 			if (childIndex > 0)
@@ -216,6 +238,12 @@ public class bplustree  {
 		}
 
 		public Node getChildRightSibling(String key) {
+
+			// try to find key using binarySearch
+			// if key already present, return positive number (location)
+			// if not present, check possible insert position (-negative location)
+			// return node if < keySize(), else null
+
 			int loc = Collections.binarySearch(keys, key);
 			int childIndex = loc >= 0 ? loc + 1 : -loc - 1;
 			if (childIndex < keySize())
@@ -242,6 +270,7 @@ public class bplustree  {
 
 		@Override
 		public void search(String key) {
+			// find text in key or part of key
 			visited = true;
 			for (int i = 0; i < keys.size(); i++) {
 				String s = keys.get(i); 
@@ -256,21 +285,27 @@ public class bplustree  {
 
 		@Override
 		public void rangeSearch(String k1, String k2, int searchType) {
+			// find part of text in device or date
 			visited = true;
 			for (int i = 0; i < keys.size(); i++) {
 				String s = keys.get(i); 
 				String v = values.get(i);
 				String str = "";
+
+				// check which part of the key to compare against
 				if (searchType == dbimpl.RANGE_KEY_DEVICE) {
 					str = s.substring(0, dbimpl.DEVICE_ID_SIZE);
 				}
 				else if (searchType == dbimpl.RANGE_KEY_DATE) {
 					str = s.substring(dbimpl.DEVICE_ID_SIZE, dbimpl.DEVICE_ID_SIZE + 10);
 				}
+				// do compareTo for k1 and k2
 				if (str.compareTo(k1) >= 0 && str.compareTo(k2) <= 0) {
 					System.out.println("Found in B+ Tree Range [" + k1 + "] " + dbimpl.RANGE_DELIMITER + " [" 
 						+ k2 + "]: " + s + " - " + v);
 				}
+
+				// do contains as k2 will skip above part
 				if (str.contains(k2)) {
 					System.out.println("Found in B+ Tree Range [" + k1 + "] " + dbimpl.RANGE_DELIMITER + " [" 
 						+ k2 + "]: " + s + " - " + v);
@@ -282,6 +317,8 @@ public class bplustree  {
 		public void traverse(FileOutputStream fos) {
 			visited = true;
 			byte[] record = new byte[dbimpl.TREE_RECORD_SIZE];
+
+			// for each keys in node, get value
 			for (int i = 0; i < keys.size(); i++) {
 				String s = keys.get(i); 
 				String v = values.get(i);
@@ -301,15 +338,24 @@ public class bplustree  {
 		@Override
 		public void insert(String key, String value) {
 			
+			// try to find key using binarySearch
+			// if key already present, return positive number (location)
+			// if not present, check possible insert position (-negative location)
+			
+
 			int loc = Collections.binarySearch(keys, key);
 			int valueIndex = loc >= 0 ? loc : -loc - 1;
+
+			// if location is not empty, set
 			if (loc >= 0) {
 				if (dbimpl.DEBUG_MODE_SHOW_INSERT) {
 					// if (key.toLowerCase().contains(dbimpl.DEBUG_MODE_SEARCH_STR))
 						System.out.println("[a] Adding key/value in leafNode: values.size() = " + values.size() + " / " + key + "/" + value);
 				}
 				values.set(valueIndex, value);
-			} else {
+			} 
+			// add keys if location is empty
+			else {
 				if (dbimpl.DEBUG_MODE_SHOW_INSERT) {
 					// if (key.toLowerCase().contains(dbimpl.DEBUG_MODE_SEARCH_STR))
 						System.out.println("[b] Adding key/value in leafNode: values.size() = " + values.size() + " / " + key + "/" + value);
@@ -322,6 +368,8 @@ public class bplustree  {
 					// if (key.toLowerCase().contains(dbimpl.DEBUG_MODE_SEARCH_STR))
 						System.out.println("[c] Overflow in leafNode: values.size() = " + values.size() + " / " + key + "/" + value);
 				}
+
+				// handle overflow
 				Node sibling = split();
 				innerNode newRoot = new innerNode();
 				newRoot.keys.add(sibling.getFirstLeafKey());
@@ -340,6 +388,11 @@ public class bplustree  {
 		public Node split() {
 			if (dbimpl.DEBUG_MODE_SHOW_INSERT)
 				System.out.println("[b] Splitting leafNode");
+
+			// create new leafNode
+			// assign keys and values from first half
+			// set next to sibling
+			
 			leafNode sibling = new leafNode();
 			int from = (keySize() + 1) / 2;
 			int to = keySize();
